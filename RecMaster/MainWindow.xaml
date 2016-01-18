@@ -6,14 +6,21 @@
         xmlns:local="clr-namespace:RecMaster"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="RecMaster" Height="350" Width="525" WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                <GradientStop Color="#FF263420" Offset="1"/>
-                <GradientStop Color="#FFB7F79B"/>
-                <GradientStop Color="#FFB1EF96" Offset="0.02"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-    </Grid>
+        Title="RecMaster" Height="350" Width="525" WindowStartupLocation="CenterScreen"
+        BorderThickness="0" 
+        GlowBrush="Black"
+        ResizeMode="CanResizeWithGrip"
+        WindowTransitionsEnabled="False" WindowStyle="None">
+    <TabControl x:Name="tabControl">
+        <TabItem Header="TabItem">
+            <Grid Background="#FFE5E5E5">
+                <Button x:Name="button" Content="Record" HorizontalAlignment="Left" Height="30" Margin="25,25,0,-55" VerticalAlignment="Top" Width="75"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="TabItem">
+            <Grid Background="#FFE5E5E5">
+                <Button x:Name="button1" Content="Save" HorizontalAlignment="Left" Height="41" Margin="55,43,0,0" VerticalAlignment="Top" Width="75"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Controls:MetroWindow>
