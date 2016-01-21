@@ -12,14 +12,16 @@
         ResizeMode="CanResizeWithGrip"
         WindowTransitionsEnabled="False" WindowStyle="None">
     <TabControl x:Name="tabControl">
-        <TabItem Header="TabItem">
+        <TabItem Header="Audio">
             <Grid Background="#FFE5E5E5">
-                <Button x:Name="button" Content="Record" HorizontalAlignment="Left" Height="30" Margin="25,25,0,-55" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="btnAudioRecord" Content="Record" HorizontalAlignment="Left" Height="30" Margin="25,25,0,-55" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="btnAudioSave" Content="Save" HorizontalAlignment="Left" Margin="25,86,0,0" VerticalAlignment="Top" Width="75"/>
             </Grid>
         </TabItem>
-        <TabItem Header="TabItem">
+        <TabItem Header="Video">
             <Grid Background="#FFE5E5E5">
-                <Button x:Name="button1" Content="Save" HorizontalAlignment="Left" Height="41" Margin="55,43,0,0" VerticalAlignment="Top" Width="75"/>
+                <Button x:Name="btnVideoSave" Content="Save" HorizontalAlignment="Left" Height="41" Margin="47,97,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoSave_Click"/>
+                <Button x:Name="btnVideoRecord" Content="Record" HorizontalAlignment="Left" Margin="47,37,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoRecord_Click"/>
             </Grid>
         </TabItem>
     </TabControl>

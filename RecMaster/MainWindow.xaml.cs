@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
 using MahApps.Metro.Controls;
+using MediaFoundation;
 
 namespace RecMaster
 {
@@ -21,9 +23,21 @@ namespace RecMaster
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        VideoRec _videoRec;
         public MainWindow()
         {
             InitializeComponent();
+            _videoRec = new VideoRec();
+        }
+
+        private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
+        {
+            _videoRec.StartRec();
+        }
+
+        private void btnVideoSave_Click(object sender, RoutedEventArgs e)
+        {
+            _videoRec.StopRec();
         }
     }
 }
