@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using MahApps.Metro.Controls;
+using AForge.Video.FFMPEG;
+using AForge.Video;
 using MediaFoundation;
 
 namespace RecMaster
@@ -23,21 +25,36 @@ namespace RecMaster
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        VideoRec _videoRec;
+        VideoRec videoRec;
+
         public MainWindow()
         {
             InitializeComponent();
-            _videoRec = new VideoRec();
+            videoRec = new VideoRec();
+
+            comboBoxCodec.ItemsSource = Enum.GetValues(typeof(VideoCodec));
+            comboBoxBitRate.ItemsSource = Enum.GetValues(typeof(BitRate));
+            comboBoxScreens.ItemsSource = videoRec.screenNamesList;
         }
 
         private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
         {
-            _videoRec.StartRec();
+            videoRec.StartRec(comboBoxScreens.SelectedValue.ToString(), (VideoCodec)comboBoxCodec.SelectedValue, (BitRate)comboBoxBitRate.SelectedValue, (int)numericFPS.Value);
         }
 
         private void btnVideoSave_Click(object sender, RoutedEventArgs e)
         {
-            _videoRec.StopRec();
+            videoRec.StopRec();
+        }
+
+        private void btnAudioRecord_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnAudioSave_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

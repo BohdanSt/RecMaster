@@ -25,37 +25,55 @@ namespace RecMaster
 
     class VideoRec
     {
-        private bool _isRecording;
-        //private List<string> _screenNames;
-        //private Rectangle _screenSize;
-        private UInt32 _frameCount;
-        private VideoFileWriter _writer;
-        private int _width;
-        private int _height;
-        private ScreenCaptureStream _streamVideo;
-        private Stopwatch _stopWatch;
-        //private Rectangle _screenArea;
+        private bool isRecording;
+        
+        private Rectangle screenSize;
+        private Rectangle screenArea;
+        private UInt32 frameCount;
+        
+        private int width;
+        private int height;
 
-        private int _fps = 15;
-        private VideoCodec _videoCodec = VideoCodec.MPEG4;
-        private BitRate _bitRate = BitRate._1000kbit;
+        private ScreenCaptureStream streamVideo;
+        private VideoFileWriter writer;
+        private Stopwatch stopWatch;
+        
+
+        private int fps = 15;
+        private string screenName;
+        private VideoCodec videoCodec;
+        private BitRate bitRate;
+
+        public List<string> screenNamesList;
 
         public VideoRec ()
         {
-            this._isRecording = false;
-            this._frameCount = 0;
-            this._width = (int)SystemParameters.VirtualScreenWidth;
-            this._height = (int)SystemParameters.VirtualScreenHeight;
-            this._stopWatch = new Stopwatch();
+            this.isRecording = false;
+            this.frameCount = 0;
+            this.width = (int)SystemParameters.VirtualScreenWidth;
+            this.height = (int)SystemParameters.VirtualScreenHeight;
+            this.stopWatch = new Stopwatch();
 
-            this._writer = new VideoFileWriter();
+            this.writer = new VideoFileWriter();
+
+            screenNamesList = new List<string>();
+            screenNamesList.Add(@"Select ALL");
+            foreach (var screen in Screen.AllScreens)
+            {
+                screenNamesList.Add(screen.DeviceName);
+            }
 
         }
 
-        public string StartRec()
+        public string StartRec(string selectedScreen, VideoCodec selectedCodec, BitRate selectedBitRate, int selectedfps)
         {
             try
             {
+                screenName = selectedScreen;
+                videoCodec = selectedCodec;
+                bitRate = selectedBitRate;
+                fps = selectedfps;
+
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
@@ -72,50 +90,63 @@ namespace RecMaster
 
         private void InitRec(string path)
         {
-            if (_isRecording == false)
+            if (isRecording == false)
             {
             
-                _isRecording = true;
+                isRecording = true;
 
-                this._frameCount = 0;
+                this.SetScreenArea();
+
+                this.frameCount = 0;
                 
                 string fullName = string.Format(@"{0}\{1}_{2}.avi", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
                 // Save File option
-                _writer.Open(
-                    fullName,
-                    this._width,
-                    this._height,
-                    (int)_fps,
-                    (VideoCodec)_videoCodec,
-                    (int)(BitRate)_bitRate);
+                writer.Open(fullName, this.width, this.height, (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
 
                 // Start main work
                 this.StartRecord();
             }
         }
 
+        private void SetScreenArea()
+        {
+            if (string.Compare(screenName, @"Select ALL", StringComparison.OrdinalIgnoreCase) == 0)
+            {
+                foreach (Screen screen in Screen.AllScreens)
+                {
+                    this.screenArea = Rectangle.Union(screenArea, screen.Bounds);
+                }
+            }
+            else
+            {
+                this.screenArea = Screen.AllScreens.First(scr => scr.DeviceName.Equals(screenName)).Bounds;
+                this.width = this.screenArea.Width;
+                this.height = this.screenArea.Height;
+            }
+        }
+
         private void StartRecord() //Object stateInfo
         {
             // create screen capture video source
-            this._streamVideo = new ScreenCaptureStream(new Rectangle(0, 0, this._width,  this._height));
+            this.streamVideo = new ScreenCaptureStream(new Rectangle(0, 0, this.width,  this.height));
 
             // set NewFrame event handler
-            this._streamVideo.NewFrame += new NewFrameEventHandler(this.NewFrame);
+            this.streamVideo.NewFrame += new NewFrameEventHandler(this.NewFrame);
 
             // start the video source
-            this._streamVideo.Start();
+            this.streamVideo.Start();
 
             // _stopWatch
-            this._stopWatch.Start();
+            this.stopWatch.Start();
         }
 
         private void NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            if (this._isRecording)
+            if (this.isRecording)
             {
-                this._frameCount++;
-                this._writer.WriteVideoFrame(eventArgs.Frame);
+                this.frameCount++;
+                this.writer.WriteVideoFrame(eventArgs.Frame);
             /*
                 this.lb_1.Invoke(new Action(() =>
                 {
@@ -130,15 +161,15 @@ namespace RecMaster
             }
             else
             {
-                _stopWatch.Reset();
-                _streamVideo.SignalToStop();
-                _writer.Close();
+                stopWatch.Reset();
+                streamVideo.SignalToStop();
+                writer.Close();
             }
         }
 
         public void StopRec()
         {
-            _isRecording = false;
+            isRecording = false;
             System.Windows.MessageBox.Show(@"File saved!");
         }
 
