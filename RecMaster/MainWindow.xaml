@@ -16,20 +16,24 @@
             <Grid Background="#FFE5E5E5">
                 <Button x:Name="btnAudioRecord" Content="Record" HorizontalAlignment="Left" Height="30" Margin="25,25,0,-55" VerticalAlignment="Top" Width="75" Click="btnAudioRecord_Click"/>
                 <Button x:Name="btnAudioSave" Content="Save" HorizontalAlignment="Left" Margin="25,86,0,0" VerticalAlignment="Top" Width="75" Click="btnAudioSave_Click"/>
+                <Label x:Name="labelAudioSource" Content="Source" HorizontalAlignment="Left" Margin="288,40,0,0" VerticalAlignment="Top"/>
+                <ComboBox x:Name="comboBoxAudioSource" HorizontalAlignment="Left" Margin="257,86,0,0" VerticalAlignment="Top" Width="120"/>
             </Grid>
         </TabItem>
         <TabItem Header="Video">
-            <Grid Background="#FFE5E5E5">
-                <Button x:Name="btnVideoSave" Content="Save" HorizontalAlignment="Left" Height="41" Margin="47,97,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoSave_Click"/>
-                <Button x:Name="btnVideoRecord" Content="Record" HorizontalAlignment="Left" Margin="47,37,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoRecord_Click"/>
-                <ComboBox x:Name="comboBoxCodec" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,37,0,0" VerticalAlignment="Top" Width="120"/>
-                <ComboBox x:Name="comboBoxScreens" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,88,0,0" VerticalAlignment="Top" Width="120"/>
-                <ComboBox x:Name="comboBoxBitRate" SelectedIndex="3" HorizontalAlignment="Left" Margin="316,137,0,0" VerticalAlignment="Top" Width="120"/>
-                <Label x:Name="labelCodec" Content="Codecs" HorizontalAlignment="Left" Margin="352,10,0,0" VerticalAlignment="Top"/>
-                <Label x:Name="labelScreens" Content="Screens" HorizontalAlignment="Left" Margin="352,68,0,0" VerticalAlignment="Top"/>
-                <Label x:Name="labelBitRate" Content="BitRate" HorizontalAlignment="Left" Margin="352,117,0,0" VerticalAlignment="Top"/>
-                <Controls:NumericUpDown x:Name="numericFPS" Minimum="1" Maximum="60" Value="10" Margin="316,214,85,32"/>
-                <Label x:Name="labelFPS" Content="FPS" HorizontalAlignment="Left" Margin="370,183,0,0" VerticalAlignment="Top"/>
+            <Grid>
+                <Grid Background="#FFE5E5E5">
+                    <Button x:Name="btnVideoSave" Content="Save" HorizontalAlignment="Left" Height="41" Margin="47,97,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoSave_Click"/>
+                    <Button x:Name="btnVideoRecord" Content="Record" HorizontalAlignment="Left" Margin="47,37,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoRecord_Click"/>
+                    <ComboBox x:Name="comboBoxVideoCodec" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,37,0,0" VerticalAlignment="Top" Width="120"/>
+                    <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,88,0,0" VerticalAlignment="Top" Width="120"/>
+                    <ComboBox x:Name="comboBoxVideoBitRate" SelectedIndex="3" HorizontalAlignment="Left" Margin="316,137,0,0" VerticalAlignment="Top" Width="120"/>
+                    <Label x:Name="labelVideoCodec" Content="Codecs" HorizontalAlignment="Left" Margin="352,10,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelVideoScreens" Content="Screens" HorizontalAlignment="Left" Margin="352,68,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelVideoBitRate" Content="BitRate" HorizontalAlignment="Left" Margin="352,117,0,0" VerticalAlignment="Top"/>
+                    <Controls:NumericUpDown x:Name="numericVideoFPS" Minimum="1" Maximum="60" Value="10" Margin="316,214,85,32"/>
+                    <Label x:Name="labelVideoFPS" Content="FPS" HorizontalAlignment="Left" Margin="370,183,0,0" VerticalAlignment="Top"/>
+                </Grid>
             </Grid>
         </TabItem>
     </TabControl>

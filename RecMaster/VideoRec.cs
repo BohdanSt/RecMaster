@@ -26,8 +26,6 @@ namespace RecMaster
     class VideoRec
     {
         private bool isRecording;
-        
-        private Rectangle screenSize;
         private Rectangle screenArea;
         private UInt32 frameCount;
         

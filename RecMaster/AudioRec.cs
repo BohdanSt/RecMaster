@@ -3,68 +3,100 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using NAudio;
+using NAudio.Wave;
 
 namespace RecMaster
 {
     class AudioRec
     {
-        /*
-        private void button1_Click(object sender, EventArgs e)
+        private WaveIn sourceStream;
+        private WaveFileWriter waveWriter;
+
+        private int sourceNumber;
+        public List<WaveInCapabilities> sources;
+
+        public AudioRec()
         {
-            List<NAudio.Wave.WaveInCapabilities> sources = new List<NAudio.Wave.WaveInCapabilities>();
+            sourceStream = null;
+            waveWriter = null;
 
-            for (int i = 0; i < NAudio.Wave.WaveIn.DeviceCount; i++)
+            sources = new List<WaveInCapabilities>();
+            for (int i = 0; i < WaveIn.DeviceCount; i++)
             {
-                sources.Add(NAudio.Wave.WaveIn.GetCapabilities(i));
-            }
-
-            sourceList.Items.Clear();
-
-            foreach (var source in sources)
-            {
-                ListViewItem item = new ListViewItem(source.ProductName);
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, source.Channels.ToString()));
-                sourceList.Items.Add(item);
+                sources.Add(WaveIn.GetCapabilities(i));
             }
         }
 
-        NAudio.Wave.WaveIn sourceStream = null;
-        NAudio.Wave.DirectSoundOut waveOut = null;
-
-        private void button2_Click(object sender, EventArgs e)
+        public string StartRec(int sourceNumber)
         {
-            if (sourceList.SelectedItems.Count == 0) return;
+            try
+            {
+                this.sourceNumber = sourceNumber;
 
-            int deviceNumber = sourceList.SelectedItems[0].Index;
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                if (fbd.ShowDialog() == DialogResult.OK)
+                {
+                    this.InitRec(fbd.SelectedPath);
+                    return "Запис розпочато";
+                }
+                else return "Choose folder";
+            }
+            catch (Exception exc)
+            {
+                return exc.Message;
+            }
 
-            sourceStream = new NAudio.Wave.WaveIn();
-            sourceStream.DeviceNumber = deviceNumber;
-            sourceStream.WaveFormat = new NAudio.Wave.WaveFormat(44100, NAudio.Wave.WaveIn.GetCapabilities(deviceNumber).Channels);
+        }
 
-            NAudio.Wave.WaveInProvider waveIn = new NAudio.Wave.WaveInProvider(sourceStream);
+        void InitRec(string path)
+        {
+            sourceStream = new WaveIn();
+            //  sourceStream.DeviceNumber = sourceNumber;
+            //    sourceStream.WaveFormat = new WaveFormat(44100, WaveIn.GetCapabilities(sourceNumber).Channels);
+            sourceStream.WaveFormat = new WaveFormat(44100, 1);
 
-            waveOut = new NAudio.Wave.DirectSoundOut();
-            waveOut.Init(waveIn);
+            sourceStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceStream_DataAvailable);
+            sourceStream.RecordingStopped += new EventHandler<StoppedEventArgs>(sourceStream_RecordingStopped);
+
+            string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+
+            waveWriter = new WaveFileWriter(fullName, sourceStream.WaveFormat);
 
             sourceStream.StartRecording();
-            waveOut.Play();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        void sourceStream_DataAvailable(object sender, WaveInEventArgs e)
         {
-            if (waveOut != null)
+            if (waveWriter != null)
             {
-                waveOut.Stop();
-                waveOut.Dispose();
-                waveOut = null;
+                waveWriter.Write(e.Buffer, 0, e.BytesRecorded);
+                waveWriter.Flush();
             }
+        }
+
+        void sourceStream_RecordingStopped(object sender, StoppedEventArgs e)
+        {
             if (sourceStream != null)
             {
-                sourceStream.StopRecording();
                 sourceStream.Dispose();
                 sourceStream = null;
             }
+
+            if (waveWriter != null)
+            {
+                waveWriter.Close();
+                waveWriter.Dispose();
+                waveWriter = null;
+            }
         }
-        */
+
+
+        public void StopRec()
+        {
+            sourceStream.StopRecording();
+            System.Windows.MessageBox.Show(@"File saved!");
+        }
     }
 }
