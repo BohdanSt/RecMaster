@@ -1,40 +1,46 @@
-﻿<Controls:MetroWindow x:Class="RecMaster.MainWindow"
+﻿<controls:MetroWindow x:Class="RecMaster.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecMaster"
-        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:svl="clr-namespace:WPFSoundVisualizationLib;assembly=WPFSoundVisualizationLib"
+        xmlns:kinect="clr-namespace:Coding4Fun;assembly=Coding4Fun.Kinect.Wpf"
         mc:Ignorable="d"
         Title="RecMaster" Height="350" Width="525" WindowStartupLocation="CenterScreen"
         BorderThickness="0" 
         GlowBrush="Black"
         ResizeMode="CanMinimize"
         WindowTransitionsEnabled="False" WindowStyle="None">
-    <TabControl x:Name="tabControl">
-        <TabItem Header="Audio">
+    <controls:MetroAnimatedSingleRowTabControl x:Name="tabControl">
+        <controls:MetroTabItem Header="Аудіо">
             <Grid Background="#FFE5E5E5">
-                <Button x:Name="btnAudioRecord" Content="Record" HorizontalAlignment="Left" Height="30" Margin="25,25,0,-55" VerticalAlignment="Top" Width="75" Click="btnAudioRecord_Click"/>
-                <Button x:Name="btnAudioSave" Content="Save" HorizontalAlignment="Left" Margin="25,86,0,0" VerticalAlignment="Top" Width="75" Click="btnAudioSave_Click"/>
-                <Label x:Name="labelAudioSource" Content="Source" HorizontalAlignment="Left" Margin="288,40,0,0" VerticalAlignment="Top"/>
-                <ComboBox x:Name="comboBoxAudioSource" HorizontalAlignment="Left" Margin="257,86,0,0" VerticalAlignment="Top" Width="120"/>
+                <Button x:Name="btnAudioRecord" Content="Записати" HorizontalAlignment="Left" Height="35" Margin="35,25,0,0" VerticalAlignment="Top" Width="100" Click="btnAudioRecord_Click"/>
+                <Button x:Name="btnAudioSave" Content="Зберегти" HorizontalAlignment="Left" Margin="35,82,0,0" VerticalAlignment="Top" Width="100" Click="btnAudioSave_Click" Height="39"/>
+                <Label x:Name="labelAudioSource" Content="Пристрій" HorizontalAlignment="Left" Margin="203,51,0,0" VerticalAlignment="Top"/>
+                <ComboBox x:Name="comboBoxAudioSource" HorizontalAlignment="Left" Margin="173,82,0,0" VerticalAlignment="Top" Width="120"/>
+                <svl:Equalizer x:Name="Equalizer" Margin="25,148,262,23"/>
+                <svl:DigitalClock x:Name="DigitalClock" Margin="360,58,65,198"></svl:DigitalClock>
+                <svl:WaveformTimeline x:Name="WaveformTimeline" Margin="325,148,38,23"/>
             </Grid>
-        </TabItem>
-        <TabItem Header="Video">
+        </controls:MetroTabItem>
+        <controls:MetroTabItem Header="Відео">
             <Grid>
                 <Grid Background="#FFE5E5E5">
-                    <Button x:Name="btnVideoSave" Content="Save" HorizontalAlignment="Left" Height="41" Margin="47,97,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoSave_Click"/>
-                    <Button x:Name="btnVideoRecord" Content="Record" HorizontalAlignment="Left" Margin="47,37,0,0" VerticalAlignment="Top" Width="75" Click="btnVideoRecord_Click"/>
+                    <Button x:Name="btnVideoSave" Content="Збеергти" HorizontalAlignment="Left" Height="41" Margin="35,109,0,0" VerticalAlignment="Top" Width="100" Click="btnVideoSave_Click"/>
+                    <Button x:Name="btnVideoRecord" Content="Записати" HorizontalAlignment="Left" Margin="35,37,0,0" VerticalAlignment="Top" Width="100" Click="btnVideoRecord_Click" Height="36"/>
                     <ComboBox x:Name="comboBoxVideoCodec" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,37,0,0" VerticalAlignment="Top" Width="120"/>
                     <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,88,0,0" VerticalAlignment="Top" Width="120"/>
                     <ComboBox x:Name="comboBoxVideoBitRate" SelectedIndex="3" HorizontalAlignment="Left" Margin="316,137,0,0" VerticalAlignment="Top" Width="120"/>
-                    <Label x:Name="labelVideoCodec" Content="Codecs" HorizontalAlignment="Left" Margin="352,10,0,0" VerticalAlignment="Top"/>
-                    <Label x:Name="labelVideoScreens" Content="Screens" HorizontalAlignment="Left" Margin="352,68,0,0" VerticalAlignment="Top"/>
-                    <Label x:Name="labelVideoBitRate" Content="BitRate" HorizontalAlignment="Left" Margin="352,117,0,0" VerticalAlignment="Top"/>
-                    <Controls:NumericUpDown x:Name="numericVideoFPS" Minimum="1" Maximum="60" Value="10" Margin="316,214,85,32"/>
-                    <Label x:Name="labelVideoFPS" Content="FPS" HorizontalAlignment="Left" Margin="370,183,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelVideoCodec" Content="Відеокодеки" HorizontalAlignment="Left" Margin="342,10,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelVideoScreens" Content="Пристрій" HorizontalAlignment="Left" Margin="348,68,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelVideoBitRate" Content="Бітрейт" HorizontalAlignment="Left" Margin="353,117,0,0" VerticalAlignment="Top"/>
+                    <controls:NumericUpDown x:Name="numericVideoFPS" Minimum="1" Maximum="60" Value="10" Margin="316,214,85,32"/>
+                    <Label x:Name="labelVideoFPS" Content="FPS" HorizontalAlignment="Left" Margin="362,183,0,0" VerticalAlignment="Top"/>
+                    <Image x:Name="default_png" Margin="155, 0,250,85" Source="default.png"  Width="120" Height="250"/>
                 </Grid>
             </Grid>
-        </TabItem>
-    </TabControl>
-</Controls:MetroWindow>
+        </controls:MetroTabItem>
+    </controls:MetroAnimatedSingleRowTabControl>
+</controls:MetroWindow>

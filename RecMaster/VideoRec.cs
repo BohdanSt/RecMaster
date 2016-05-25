@@ -118,7 +118,9 @@ namespace RecMaster
             }
             else
             {
-                this.screenArea = Screen.AllScreens.First(scr => scr.DeviceName.Equals(screenName)).Bounds;
+                this.screenArea = Screen.AllScreens
+                                        .First(scr => scr.DeviceName.Equals(screenName))
+                                        .Bounds;
                 this.width = this.screenArea.Width;
                 this.height = this.screenArea.Height;
             }

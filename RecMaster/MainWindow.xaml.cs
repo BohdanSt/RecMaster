@@ -61,8 +61,12 @@ namespace RecMaster
 
         private void InitAudioView()
         {
-            foreach (var source in audioRec.sources)
+            foreach (var source in audioRec.sourceIn)
                 comboBoxAudioSource.Items.Add(source.ProductName);
+            foreach (var source in audioRec.sourceOut)
+                comboBoxAudioSource.Items.Add(source.ProductName);
+
+            comboBoxAudioSource.SelectedIndex = 0;
         }
 
         private void InitVideoView()
@@ -74,7 +78,13 @@ namespace RecMaster
                 comboBoxVideoCodec.Items.Add(codec);
             }
 
-            comboBoxVideoBitRate.ItemsSource = Enum.GetValues(typeof(BitRate));
+            Dictionary<string, BitRate> bitRateDictionary = new Dictionary<string, BitRate>();
+            foreach (BitRate bitRate in Enum.GetValues(typeof(BitRate)))
+            {
+                bitRateDictionary.Add( bitRate.ToString().Substring(1), bitRate);
+            }
+
+            comboBoxVideoBitRate.ItemsSource = bitRateDictionary;
             comboBoxVideoScreens.ItemsSource = videoRec.screenNamesList;
         }
     }
