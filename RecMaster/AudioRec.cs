@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio;
 using NAudio.Wave;
+using WPFSoundVisualizationLib;
 
 namespace RecMaster
 {
@@ -23,8 +24,13 @@ namespace RecMaster
         private int sourceNumber;
         public List<WaveInCapabilities> sourceIn;
         public List<WaveOutCapabilities> sourceOut;
+        private WPFSoundVisualizationLib.Equalizer equalizer;
 
-        public AudioRec()
+        public delegate void ThreadLabelTimeDelegate();
+        public event ThreadLabelTimeDelegate ThreadLabelTimeEventStart = delegate { };
+        public event ThreadLabelTimeDelegate ThreadLabelTimeEventStop = delegate { };
+
+        public AudioRec(WPFSoundVisualizationLib.Equalizer equalizer)
         { 
             sourceInStream = null;
             sourceOutStream = null;
@@ -41,6 +47,8 @@ namespace RecMaster
             {
                 sourceOut.Add(WaveOut.GetCapabilities(i));
             }
+
+            this.equalizer = equalizer;
         }
 
         public string StartRec(int sourceNumber)
@@ -94,8 +102,9 @@ namespace RecMaster
             string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
             waveWriter = new WaveFileWriter(fullName, sourceInStream.WaveFormat);
-
+            
             sourceInStream.StartRecording();
+            OnThreadLabelTimeEventStart();
         }
 
         void InitOutputStream(string path)
@@ -108,6 +117,7 @@ namespace RecMaster
             waveOut = new WaveOut();
             waveOut.Init(recorder);
             waveOut.Play();
+            OnThreadLabelTimeEventStart();
         }
 
 
@@ -159,7 +169,18 @@ namespace RecMaster
                 sourceInStream.StopRecording();
             else
                 StopPlay();
+            OnThreadLabelTimeEventStop();
             System.Windows.MessageBox.Show(@"File saved!");
+        }
+
+        void OnThreadLabelTimeEventStart()
+        {
+            ThreadLabelTimeEventStart();
+        }
+
+        void OnThreadLabelTimeEventStop()
+        {
+            ThreadLabelTimeEventStop();
         }
     }
 

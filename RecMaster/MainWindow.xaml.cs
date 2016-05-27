@@ -28,15 +28,24 @@ namespace RecMaster
         AudioRec audioRec;
         VideoRec videoRec;
 
+        LabelTimeThread threadAudio;
+        LabelTimeThread threadVideo;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            audioRec = new AudioRec();
+            audioRec = new AudioRec(Equalizer);
             InitAudioView();
+            threadAudio = new LabelTimeThread(LabelTimeAudio);
+            audioRec.ThreadLabelTimeEventStart += threadAudio.Start;
+            audioRec.ThreadLabelTimeEventStop += threadAudio.Stop;
 
             videoRec = new VideoRec();
             InitVideoView();
+            threadVideo = new LabelTimeThread(LabelTimeVideo);
+            videoRec.ThreadLabelTimeEventStart += threadVideo.Start;
+            videoRec.ThreadLabelTimeEventStop += threadVideo.Stop;
         }
 
         private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
@@ -78,14 +87,20 @@ namespace RecMaster
                 comboBoxVideoCodec.Items.Add(codec);
             }
 
-            Dictionary<string, BitRate> bitRateDictionary = new Dictionary<string, BitRate>();
+            Dictionary<BitRate, string> bitRateDictionary = new Dictionary<BitRate, string>();
             foreach (BitRate bitRate in Enum.GetValues(typeof(BitRate)))
             {
-                bitRateDictionary.Add( bitRate.ToString().Substring(1), bitRate);
+                bitRateDictionary.Add(bitRate, bitRate.ToString().Substring(1));
             }
 
             comboBoxVideoBitRate.ItemsSource = bitRateDictionary;
             comboBoxVideoScreens.ItemsSource = videoRec.screenNamesList;
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            threadAudio.Stop();
+            threadVideo.Stop();
         }
     }
 }

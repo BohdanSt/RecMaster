@@ -12,17 +12,20 @@
         BorderThickness="0" 
         GlowBrush="Black"
         ResizeMode="CanMinimize"
-        WindowTransitionsEnabled="False" WindowStyle="None">
+        WindowTransitionsEnabled="False" WindowStyle="None" Closing="MetroWindow_Closing">
     <controls:MetroAnimatedSingleRowTabControl x:Name="tabControl">
         <controls:MetroTabItem Header="Аудіо">
             <Grid Background="#FFE5E5E5">
-                <Button x:Name="btnAudioRecord" Content="Записати" HorizontalAlignment="Left" Height="35" Margin="35,25,0,0" VerticalAlignment="Top" Width="100" Click="btnAudioRecord_Click"/>
-                <Button x:Name="btnAudioSave" Content="Зберегти" HorizontalAlignment="Left" Margin="35,82,0,0" VerticalAlignment="Top" Width="100" Click="btnAudioSave_Click" Height="39"/>
-                <Label x:Name="labelAudioSource" Content="Пристрій" HorizontalAlignment="Left" Margin="203,51,0,0" VerticalAlignment="Top"/>
-                <ComboBox x:Name="comboBoxAudioSource" HorizontalAlignment="Left" Margin="173,82,0,0" VerticalAlignment="Top" Width="120"/>
-                <svl:Equalizer x:Name="Equalizer" Margin="25,148,262,23"/>
-                <svl:DigitalClock x:Name="DigitalClock" Margin="360,58,65,198"></svl:DigitalClock>
-                <svl:WaveformTimeline x:Name="WaveformTimeline" Margin="325,148,38,23"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="39*"/>
+                    <ColumnDefinition Width="136*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnAudioRecord" Content="Записати" HorizontalAlignment="Left" Height="35" Margin="35,25,0,0" VerticalAlignment="Top" Width="100" Click="btnAudioRecord_Click" Grid.ColumnSpan="2"/>
+                <Button x:Name="btnAudioSave" Content="Зберегти" HorizontalAlignment="Left" Margin="35,82,0,0" VerticalAlignment="Top" Width="100" Click="btnAudioSave_Click" Height="39" Grid.ColumnSpan="2"/>
+                <Label x:Name="labelAudioSource" Content="Пристрій" HorizontalAlignment="Left" Margin="86,51,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                <ComboBox x:Name="comboBoxAudioSource" HorizontalAlignment="Left" Margin="56,82,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1"/>
+                <svl:Equalizer x:Name="Equalizer" Margin="25,148,262,23" Grid.ColumnSpan="2"/>
+                <Label x:Name="LabelTimeAudio" FontFamily="Consolas, Tahoma" Content="00:00:00" Margin="203,150,0,0" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" BorderThickness="1" Grid.Column="1"/>
             </Grid>
         </controls:MetroTabItem>
         <controls:MetroTabItem Header="Відео">
@@ -32,13 +35,14 @@
                     <Button x:Name="btnVideoRecord" Content="Записати" HorizontalAlignment="Left" Margin="35,37,0,0" VerticalAlignment="Top" Width="100" Click="btnVideoRecord_Click" Height="36"/>
                     <ComboBox x:Name="comboBoxVideoCodec" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,37,0,0" VerticalAlignment="Top" Width="120"/>
                     <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" HorizontalAlignment="Left" Margin="316,88,0,0" VerticalAlignment="Top" Width="120"/>
-                    <ComboBox x:Name="comboBoxVideoBitRate" SelectedIndex="3" HorizontalAlignment="Left" Margin="316,137,0,0" VerticalAlignment="Top" Width="120"/>
+                    <ComboBox x:Name="comboBoxVideoBitRate" SelectedIndex="3" HorizontalAlignment="Left" Margin="316,137,0,0" VerticalAlignment="Top" Width="120" SelectedValuePath="Key" DisplayMemberPath="Value"/>
                     <Label x:Name="labelVideoCodec" Content="Відеокодеки" HorizontalAlignment="Left" Margin="342,10,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="labelVideoScreens" Content="Пристрій" HorizontalAlignment="Left" Margin="348,68,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="labelVideoBitRate" Content="Бітрейт" HorizontalAlignment="Left" Margin="353,117,0,0" VerticalAlignment="Top"/>
                     <controls:NumericUpDown x:Name="numericVideoFPS" Minimum="1" Maximum="60" Value="10" Margin="316,214,85,32"/>
                     <Label x:Name="labelVideoFPS" Content="FPS" HorizontalAlignment="Left" Margin="362,183,0,0" VerticalAlignment="Top"/>
                     <Image x:Name="default_png" Margin="155, 0,250,85" Source="default.png"  Width="120" Height="250"/>
+                    <Label x:Name="LabelTimeVideo" FontFamily="Consolas, Tahoma" Content="00:00:00" Margin="145,180,220,0" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" BorderThickness="1" Grid.Column="1"/>
                 </Grid>
             </Grid>
         </controls:MetroTabItem>

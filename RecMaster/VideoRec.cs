@@ -34,7 +34,6 @@ namespace RecMaster
 
         private ScreenCaptureStream streamVideo;
         private VideoFileWriter writer;
-        private Stopwatch stopWatch;
         
 
         private int fps = 15;
@@ -44,13 +43,16 @@ namespace RecMaster
 
         public List<string> screenNamesList;
 
+        public delegate void ThreadLabelTimeDelegate();
+        public event ThreadLabelTimeDelegate ThreadLabelTimeEventStart = delegate { };
+        public event ThreadLabelTimeDelegate ThreadLabelTimeEventStop = delegate { };
+
         public VideoRec ()
         {
             this.isRecording = false;
             this.frameCount = 0;
             this.width = (int)SystemParameters.VirtualScreenWidth;
             this.height = (int)SystemParameters.VirtualScreenHeight;
-            this.stopWatch = new Stopwatch();
 
             this.writer = new VideoFileWriter();
 
@@ -126,19 +128,15 @@ namespace RecMaster
             }
         }
 
-        private void StartRecord() //Object stateInfo
+        private void StartRecord()
         {
-            // create screen capture video source
             this.streamVideo = new ScreenCaptureStream(new Rectangle(0, 0, this.width,  this.height));
 
-            // set NewFrame event handler
             this.streamVideo.NewFrame += new NewFrameEventHandler(this.NewFrame);
 
-            // start the video source
             this.streamVideo.Start();
 
-            // _stopWatch
-            this.stopWatch.Start();
+            OnThreadLabelTimeEventStart();
         }
 
         private void NewFrame(object sender, NewFrameEventArgs eventArgs)
@@ -147,23 +145,12 @@ namespace RecMaster
             {
                 this.frameCount++;
                 this.writer.WriteVideoFrame(eventArgs.Frame);
-            /*
-                this.lb_1.Invoke(new Action(() =>
-                {
-                    lb_1.Text = string.Format(@"Frames: {0}", _frameCount);
-                }));
-
-                this.lb_stopWatch.Invoke(new Action(() =>
-                {
-                    this.lb_stopWatch.Text = _stopWatch.Elapsed.ToString();
-                }));
-            */
             }
             else
             {
-                stopWatch.Reset();
                 streamVideo.SignalToStop();
                 writer.Close();
+                OnThreadLabelTimeEventStop();
             }
         }
 
@@ -171,6 +158,16 @@ namespace RecMaster
         {
             isRecording = false;
             System.Windows.MessageBox.Show(@"File saved!");
+        }
+
+        void OnThreadLabelTimeEventStart()
+        {
+            ThreadLabelTimeEventStart();
+        }
+
+        void OnThreadLabelTimeEventStop()
+        {
+            ThreadLabelTimeEventStop();
         }
 
     }

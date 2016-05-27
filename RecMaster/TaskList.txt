@@ -1,12 +1,11 @@
 Audio 
 1. Equalizer
-2. Timer
+2. Timer + 
 3. Preview
-4. Graphic
 5. Speaker
 
 Video
-1. Timer
+1. Timer +
 2. Filters
 3. Sound
 4. Preview
