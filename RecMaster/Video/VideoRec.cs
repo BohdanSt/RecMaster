@@ -47,6 +47,9 @@ namespace RecMaster
         public event ThreadLabelTimeDelegate ThreadLabelTimeEventStart = delegate { };
         public event ThreadLabelTimeDelegate ThreadLabelTimeEventStop = delegate { };
 
+        public delegate void MetroMessageBoxDelegate(string title, string message);
+        public event MetroMessageBoxDelegate MetroMessageBoxEvent = delegate { };
+
         public VideoRec ()
         {
             this.isRecording = false;
@@ -157,7 +160,7 @@ namespace RecMaster
         public void StopRec()
         {
             isRecording = false;
-            System.Windows.MessageBox.Show(@"File saved!");
+            OnMetroMessageBox("Запис завершено", "Файл було успішно збережено");
         }
 
         void OnThreadLabelTimeEventStart()
@@ -168,6 +171,11 @@ namespace RecMaster
         void OnThreadLabelTimeEventStop()
         {
             ThreadLabelTimeEventStop();
+        }
+
+        private void OnMetroMessageBox(string title, string message)
+        {
+            MetroMessageBoxEvent(title, message);
         }
 
     }

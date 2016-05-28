@@ -12,11 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.IO;
 using MahApps.Metro.Controls;
 using AForge.Video.FFMPEG;
 using AForge.Video;
 using MediaFoundation;
+using MahApps.Metro.Controls.Dialogs;
+using Microsoft.Win32;
 
 namespace RecMaster
 {
@@ -31,6 +33,8 @@ namespace RecMaster
         LabelTimeThread threadAudio;
         LabelTimeThread threadVideo;
 
+        RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -40,32 +44,64 @@ namespace RecMaster
             threadAudio = new LabelTimeThread(LabelTimeAudio);
             audioRec.ThreadLabelTimeEventStart += threadAudio.Start;
             audioRec.ThreadLabelTimeEventStop += threadAudio.Stop;
+            audioRec.MetroMessageBoxEvent += MetroMessageBox;
 
             videoRec = new VideoRec();
             InitVideoView();
             threadVideo = new LabelTimeThread(LabelTimeVideo);
             videoRec.ThreadLabelTimeEventStart += threadVideo.Start;
             videoRec.ThreadLabelTimeEventStop += threadVideo.Stop;
+            videoRec.MetroMessageBoxEvent += MetroMessageBox;
+
+            InitSettings();
+        }
+
+        private void InitSettings()
+        {
+            if (regKey.GetValue("RecMaster") == null)
+            {
+                chkIsAutoRun.IsChecked = false;
+            }
+            else
+            {
+                chkIsAutoRun.IsChecked = true;
+            }
+
+            textBlockFolder.Text = Directory.GetCurrentDirectory();
+
+//          if (System.IO.Directory.Exists(path))
+//          {
+// 
+//          }
         }
 
         private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
         {
-            videoRec.StartRec(comboBoxVideoScreens.SelectedValue.ToString(), (VideoCodec)comboBoxVideoCodec.SelectedValue, (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value);
+            videoRec.StartRec(comboBoxVideoScreens.SelectedValue.ToString(), (VideoCodec)comboBoxVideoCodec.SelectedValue,
+                (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value);
+            btnVideoRecord.IsEnabled = false;
+            btnVideoSave.IsEnabled = true;
         }
 
         private void btnVideoSave_Click(object sender, RoutedEventArgs e)
         {
             videoRec.StopRec();
+            btnVideoRecord.IsEnabled = true;
+            btnVideoSave.IsEnabled = false;
         }
 
         private void btnAudioRecord_Click(object sender, RoutedEventArgs e)
         {
             audioRec.StartRec((int)comboBoxAudioSource.SelectedIndex);
+            btnAudioRecord.IsEnabled = false;
+            btnAudioSave.IsEnabled = true;
         }
 
         private void btnAudioSave_Click(object sender, RoutedEventArgs e)
         {
             audioRec.StopRec();
+            btnAudioRecord.IsEnabled = true;
+            btnAudioSave.IsEnabled = false;
         }
 
         private void InitAudioView()
@@ -101,6 +137,23 @@ namespace RecMaster
         {
             threadAudio.Stop();
             threadVideo.Stop();
+        }
+
+        private async void MetroMessageBox(string title, string message)
+        {
+            await this.ShowMessageAsync(title, message);
+        }
+
+        private void AutoRunChange(object sender, RoutedEventArgs e)
+        {
+            if (chkIsAutoRun.IsChecked == true)
+            {
+                regKey.SetValue("RecMaster", "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\"");
+            }
+            else
+            {
+                regKey.DeleteValue("RecMaster", false);
+            }
         }
     }
 }

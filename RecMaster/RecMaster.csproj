@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Common\record.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
       <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
@@ -101,11 +104,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AudioRec.cs" />
-    <Compile Include="Equalizer.cs" />
-    <Compile Include="LabelTime.cs" />
-    <Compile Include="LabelTimeThread.cs" />
-    <Compile Include="VideoRec.cs" />
+    <Compile Include="Audio\AudioRec.cs" />
+    <Compile Include="Audio\Equalizer.cs" />
+    <Compile Include="Common\LabelTime.cs" />
+    <Compile Include="Common\LabelTimeThread.cs" />
+    <Compile Include="Video\VideoRec.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,13 +151,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="default.png" />
+    <Resource Include="Common\default.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="TaskList.txt" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Audio\" />
+    <Resource Include="Common\record.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

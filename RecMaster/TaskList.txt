@@ -11,9 +11,11 @@ Video
 4. Preview
 
 Settings
-1. Autorun
-2. Default folder
+1. Autorun ?
+2. Default folder +/-
 
 General
-1. Grid in Tabs
-2. Icon
+1. Grid in Tabs +
+2. Icon +
+
+label to textblock

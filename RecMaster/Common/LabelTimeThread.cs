@@ -50,7 +50,7 @@ namespace RecMaster
             if (EwhThreadLabelTime != null)
                 EwhThreadLabelTime.Set();
             labelTime.Reset();
-            App.Current.Dispatcher.BeginInvoke((Action)(() => label.Content = labelTime.ToString()));
+            App.Current.Dispatcher.BeginInvoke((Action)(() => label.Content = "00:00:00"));
         }
 
     }
