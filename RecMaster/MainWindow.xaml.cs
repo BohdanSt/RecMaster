@@ -19,6 +19,7 @@ using AForge.Video;
 using MediaFoundation;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
+using System.Windows.Forms;
 
 namespace RecMaster
 {
@@ -34,6 +35,10 @@ namespace RecMaster
         LabelTimeThread threadVideo;
 
         RegistryKey regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+        string folderPath = Directory.GetCurrentDirectory();
+
+        string configFile = Directory.GetCurrentDirectory() + "\\RecMater.config";
 
         public MainWindow()
         {
@@ -67,18 +72,34 @@ namespace RecMaster
                 chkIsAutoRun.IsChecked = true;
             }
 
-            textBlockFolder.Text = Directory.GetCurrentDirectory();
+            string path = "";
+            try
+            {
+                StreamReader fileReader = new StreamReader(configFile);
+                path = fileReader.ReadLine();
+                fileReader.Close();
+            }
+            catch (FileNotFoundException exception)
+            {
+                StreamWriter fileWriter = new StreamWriter(configFile, false);
+                fileWriter.WriteLine(folderPath);
+                fileWriter.Close();
+            }
 
-//          if (System.IO.Directory.Exists(path))
-//          {
-// 
-//          }
+            if (System.IO.Directory.Exists(path))
+            {
+                folderPath = path;
+            }
+
+            textBlockFolder.Text = folderPath;
+
+            
         }
 
         private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
         {
             videoRec.StartRec(comboBoxVideoScreens.SelectedValue.ToString(), (VideoCodec)comboBoxVideoCodec.SelectedValue,
-                (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value);
+                (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value, folderPath);
             btnVideoRecord.IsEnabled = false;
             btnVideoSave.IsEnabled = true;
         }
@@ -92,7 +113,7 @@ namespace RecMaster
 
         private void btnAudioRecord_Click(object sender, RoutedEventArgs e)
         {
-            audioRec.StartRec((int)comboBoxAudioSource.SelectedIndex);
+            audioRec.StartRec((int)comboBoxAudioSource.SelectedIndex, folderPath);
             btnAudioRecord.IsEnabled = false;
             btnAudioSave.IsEnabled = true;
         }
@@ -153,6 +174,37 @@ namespace RecMaster
             else
             {
                 regKey.DeleteValue("RecMaster", false);
+            }
+        }
+
+        private void textBlockFolder_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (System.IO.Directory.Exists(textBlockFolder.Text))
+            {
+                folderPath = textBlockFolder.Text;
+
+                StreamWriter fileWriter = new StreamWriter(configFile, false);
+                fileWriter.WriteLine(folderPath);
+                fileWriter.Close();
+            }
+            else
+            {
+                textBlockFolder.Text = folderPath;
+                MetroMessageBox("Вибір теки", "Обрана тека не існує.");
+            }
+        }
+
+        private void btnFolder_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                folderPath = fbd.SelectedPath;
+                textBlockFolder.Text = folderPath;
+
+                StreamWriter fileWriter = new StreamWriter(configFile, false);
+                fileWriter.WriteLine(folderPath);
+                fileWriter.Close();
             }
         }
     }

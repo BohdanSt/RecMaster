@@ -54,10 +54,8 @@ namespace RecMaster
             this.equalizer = equalizer;
         }
 
-        public string StartRec(int sourceNumber)
+        public void StartRec(int sourceNumber, string folderPath)
         {
-            try
-            {
                 if (sourceNumber < sourceIn.Count)
                 {
                     isInputStream = true;
@@ -69,19 +67,7 @@ namespace RecMaster
                     this.sourceNumber = sourceNumber - sourceIn.Count;
                 }
                  
-
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (fbd.ShowDialog() == DialogResult.OK)
-                {
-                    this.InitStream(fbd.SelectedPath);
-                    return "Запис розпочато";
-                }
-                else return "Choose folder";
-            }
-            catch (Exception exc)
-            {
-                return exc.Message;
-            }
+                this.InitStream(folderPath);
 
         }
 

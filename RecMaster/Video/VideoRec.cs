@@ -68,27 +68,14 @@ namespace RecMaster
 
         }
 
-        public string StartRec(string selectedScreen, VideoCodec selectedCodec, BitRate selectedBitRate, int selectedfps)
+        public void StartRec(string selectedScreen, VideoCodec selectedCodec, BitRate selectedBitRate, int selectedfps, string folderPath)
         {
-            try
-            {
-                screenName = selectedScreen;
-                videoCodec = selectedCodec;
-                bitRate = selectedBitRate;
-                fps = selectedfps;
+            screenName = selectedScreen;
+            videoCodec = selectedCodec;
+            bitRate = selectedBitRate;
+            fps = selectedfps;
 
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (fbd.ShowDialog() == DialogResult.OK)
-                {
-                    this.InitRec(fbd.SelectedPath);
-                    return "Запис розпочато";
-                }
-                else return "Choose folder";
-            }
-            catch (Exception exc)
-            {
-                return exc.Message;
-            }
+            this.InitRec(folderPath);
         }
 
         private void InitRec(string path)

@@ -1,8 +1,8 @@
 Audio 
 1. Equalizer
 2. Timer + 
-3. Preview
-5. Speaker
+3. Speaker
+4. Preview
 
 Video
 1. Timer +
@@ -11,11 +11,9 @@ Video
 4. Preview
 
 Settings
-1. Autorun ?
-2. Default folder +/-
+1. Autorun + 
+2. Default folder +
 
 General
 1. Grid in Tabs +
 2. Icon +
-
-label to textblock

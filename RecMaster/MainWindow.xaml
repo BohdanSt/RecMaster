@@ -104,15 +104,15 @@
 
                 <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <CheckBox x:Name="chkIsAutoRun" Content="Автозавантаження" IsChecked="False" Checked="AutoRunChange" Unchecked="AutoRunChange" FontSize="14"/>
-                    <Label Content="Завантаження програми при запуску операційної системи" Foreground="DarkGray" FontSize="12"/>
+                    <Label Content="Завантажувати програму RecMaster при запуску операційної системи." Foreground="DarkGray" FontSize="12"/>
                 </StackPanel>
                 <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Label Content="Оберіть папку для збереження файлів" FontSize="14"/>
+                    <Label Content="Оберіть теку для збереження файлів" FontSize="14"/>
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="textBlockFolder" Width="240" Height="40" FontSize="14" VerticalContentAlignment="Center"/>
-                        <Button Width="125" Height="40" Content="Обрати" FontSize="16" Margin="10"/>
+                        <TextBox x:Name="textBlockFolder" Width="300" Height="40" FontSize="14" VerticalContentAlignment="Center" LostFocus="textBlockFolder_LostFocus"/>
+                        <Button x:Name="btnFolder" Width="125" Height="40" Content="Обрати" FontSize="16" Margin="10" Click="btnFolder_Click"/>
                     </StackPanel>
-                    <Label Content="Директорія для збереження файлів" Foreground="DarkGray" FontSize="12"/>
+                    <Label Content="Місцерозташування на комп'ютері для збереження файлів." Foreground="DarkGray" FontSize="12"/>
                 </StackPanel>
 
             </Grid>
@@ -120,5 +120,5 @@
         </controls:MetroTabItem>
 
     </controls:MetroAnimatedSingleRowTabControl>
-    
+
 </controls:MetroWindow>
