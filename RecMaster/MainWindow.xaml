@@ -36,8 +36,14 @@
                     <Button x:Name="btnAudioSave" Content="Зберегти" Click="btnAudioSave_Click" Height="40" Width="125" Margin="10" IsEnabled="False" FontSize="16"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
-                    <Label x:Name="labelAudioSource" Content="Пристрій" Margin="5" HorizontalAlignment="Center"/>
-                    <ComboBox x:Name="comboBoxAudioSource" Width="150" FontSize="12"/>
+                    <StackPanel Margin="20">
+                        <Label x:Name="labelAudioSource" Content="Пристрій" Margin="5" HorizontalAlignment="Center"/>
+                        <ComboBox x:Name="comboBoxAudioSource" Width="150" FontSize="12" MaxWidth="250"/>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Center">
+                        <CheckBox x:Name="chkIsLoopback" Content="Програвати аудіо" IsChecked="False"/>
+                        <Label Content="Лише для вхідних аудіо потоків" Foreground="DarkGray" FontSize="12"/>
+                    </StackPanel>
                 </StackPanel>
                 <svl:Equalizer x:Name="Equalizer" Grid.Column="0" Grid.Row="1" Margin="20" />
                 <Label x:Name="LabelTimeAudio" Grid.Column="1" Grid.Row="1" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="32" 

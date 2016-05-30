@@ -13,13 +13,13 @@ namespace RecMaster
     class AudioRec
     {
         private WaveIn sourceInStream;
-        private WaveOut sourceOutStream;
+        private WaveOut loopbackStream;
+        private WasapiLoopbackCapture sourceOutStream;
         private WaveFileWriter waveWriter;
-
-        IWavePlayer waveOut;
-        private WaveRecorder recorder;
+        private WaveInProvider waveInProvider;
 
         private bool isInputStream;
+        private bool isLoopback;
 
         private int sourceNumber;
         public List<WaveInCapabilities> sourceIn;
@@ -54,27 +54,32 @@ namespace RecMaster
             this.equalizer = equalizer;
         }
 
-        public void StartRec(int sourceNumber, string folderPath)
+        public void StartRec(int sourceNumber, bool isLoopback, string folderPath)
         {
-                if (sourceNumber < sourceIn.Count)
-                {
-                    isInputStream = true;
-                    this.sourceNumber = sourceNumber - 1;
-                }
-                else
-                {
-                    isInputStream = false;
-                    this.sourceNumber = sourceNumber - sourceIn.Count;
-                }
-                 
-                this.InitStream(folderPath);
+            if (sourceNumber < sourceIn.Count)
+            {
+                isInputStream = true;
+                this.sourceNumber = sourceNumber - 1;
+            }
+            else
+            {
+                isInputStream = false;
+                this.sourceNumber = sourceNumber - sourceIn.Count;
+            }
 
+            this.isLoopback = isLoopback;
+                 
+            this.InitStream(folderPath);
         }
 
         void InitStream(string path)
         {
             if (isInputStream)
+            {
                 InitInputStream(path);
+                if (isLoopback)
+                    StartLoopback();
+            }
             else
                 InitOutputStream(path);
         }
@@ -93,19 +98,23 @@ namespace RecMaster
             waveWriter = new WaveFileWriter(fullName, sourceInStream.WaveFormat);
             
             sourceInStream.StartRecording();
+
             OnThreadLabelTimeEventStart();
         }
 
         void InitOutputStream(string path)
         {
-            var sineWaveProvider = new SineWaveProvider16();
-            sineWaveProvider.SetWaveFormat(16000, 1); // 16kHz mono
-            sineWaveProvider.Frequency = 500;
-            sineWaveProvider.Amplitude = 0.1f;
-            recorder = new WaveRecorder(sineWaveProvider, @"C:\Users\Mark\Documents\sine.wav");
-            waveOut = new WaveOut();
-            waveOut.Init(recorder);
-            waveOut.Play();
+            sourceOutStream = new WasapiLoopbackCapture();
+
+            sourceOutStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceOutStream_DataAvailable);
+            sourceOutStream.RecordingStopped += new EventHandler<StoppedEventArgs>(sourceOutStream_RecordingStopped);
+
+            string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+
+            waveWriter = new WaveFileWriter(fullName, sourceOutStream.WaveFormat);
+
+            sourceOutStream.StartRecording();
+
             OnThreadLabelTimeEventStart();
         }
 
@@ -135,31 +144,73 @@ namespace RecMaster
             }
         }
 
-
-        void StopPlay()
+        void sourceOutStream_DataAvailable(object sender, WaveInEventArgs e)
         {
-            if (waveOut != null)
+            if (waveWriter != null)
             {
-                waveOut.Stop();
-                waveOut.Dispose();
-                waveOut = null;
+                waveWriter.Write(e.Buffer, 0, e.BytesRecorded);
+                waveWriter.Flush();
+            }
+        }
+
+        void sourceOutStream_RecordingStopped(object sender, StoppedEventArgs e)
+        {
+            if (sourceOutStream != null)
+            {
+                sourceOutStream.Dispose();
+                sourceOutStream = null;
             }
 
-            if (recorder != null)
+            if (waveWriter != null)
             {
-                recorder.Dispose();
-                recorder = null;
+                waveWriter.Close();
+                waveWriter.Dispose();
+                waveWriter = null;
             }
         }
 
         public void StopRec()
         {
             if (isInputStream)
+            {
                 sourceInStream.StopRecording();
+                if (isLoopback)
+                    StopLoopback();
+            }
             else
-                StopPlay();
+                sourceOutStream.StopRecording();
             OnThreadLabelTimeEventStop();
             OnMetroMessageBox("Запис завершено", "Файл було успішно збережено");
+        }
+
+        private void StartLoopback()
+        {
+            if (isInputStream)
+            {
+                loopbackStream = new WaveOut();
+                waveInProvider = new WaveInProvider(sourceInStream);
+
+                loopbackStream.Init(waveInProvider);
+                loopbackStream.Play();
+            }
+        }
+
+        private void StopLoopback()
+        {
+            if (isInputStream)
+            {
+                if (loopbackStream != null)
+                {
+                    loopbackStream.Stop();
+                    loopbackStream.Dispose();
+                    loopbackStream = null;
+                }
+
+                if (waveInProvider != null)
+                {
+                    waveInProvider = null;
+                }
+            }
         }
 
         void OnThreadLabelTimeEventStart()
@@ -175,65 +226,6 @@ namespace RecMaster
         private void OnMetroMessageBox(string title, string message)
         {
             MetroMessageBoxEvent(title, message);
-        }
-    }
-
-
-
-
-    public class WaveRecorder : IWaveProvider, IDisposable
-    {
-        private WaveFileWriter writer;
-        private IWaveProvider source;
-
-        public WaveRecorder(IWaveProvider source, string destination)
-        {
-            this.source = source;
-            this.writer = new WaveFileWriter(destination, source.WaveFormat);
-        }
-
-        public int Read(byte[] buffer, int offset, int count)
-        {
-            int bytesRead = source.Read(buffer, offset, count);
-            writer.Write(buffer, offset, bytesRead);
-            return bytesRead;
-        }
-
-        public WaveFormat WaveFormat
-        {
-            get { return source.WaveFormat; }
-        }
-
-        public void Dispose()
-        {
-            if (writer != null)
-            {
-                writer.Dispose();
-                writer = null;
-            }
-        }
-    }
-
-    class SineWaveProvider16 : WaveProvider16
-    {
-        int sample;
-        public SineWaveProvider16()
-        {
-            Frequency = 1000;
-            Amplitude = 0.25f;
-        }
-        public float Frequency { get; set; }
-        public float Amplitude { get; set; }
-        public override int Read(short[] buffer, int offset, int sampleCount)
-        {
-            int sampleRate = WaveFormat.SampleRate;
-            for (int n = 0; n < sampleCount; n++)
-            {
-                buffer[n + offset] = (short)(Amplitude * Math.Sin((2 * Math.PI * sample * Frequency) / sampleRate));
-                sample++;
-                if (sample >= sampleRate) sample = 0;
-            }
-            return sampleCount;
         }
     }
 }

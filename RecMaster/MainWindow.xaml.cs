@@ -91,9 +91,7 @@ namespace RecMaster
                 folderPath = path;
             }
 
-            textBlockFolder.Text = folderPath;
-
-            
+            textBlockFolder.Text = folderPath; 
         }
 
         private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
@@ -101,6 +99,10 @@ namespace RecMaster
             videoRec.StartRec(comboBoxVideoScreens.SelectedValue.ToString(), (VideoCodec)comboBoxVideoCodec.SelectedValue,
                 (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value, folderPath);
             btnVideoRecord.IsEnabled = false;
+            comboBoxVideoBitRate.IsEnabled = false;
+            comboBoxVideoCodec.IsEnabled = false;
+            comboBoxVideoScreens.IsEnabled = false;
+            numericVideoFPS.IsEnabled = false;
             btnVideoSave.IsEnabled = true;
         }
 
@@ -108,13 +110,20 @@ namespace RecMaster
         {
             videoRec.StopRec();
             btnVideoRecord.IsEnabled = true;
+            comboBoxVideoBitRate.IsEnabled = true;
+            comboBoxVideoCodec.IsEnabled = true;
+            comboBoxVideoScreens.IsEnabled = true;
+            numericVideoFPS.IsEnabled = true;
             btnVideoSave.IsEnabled = false;
         }
 
         private void btnAudioRecord_Click(object sender, RoutedEventArgs e)
         {
-            audioRec.StartRec((int)comboBoxAudioSource.SelectedIndex, folderPath);
+            audioRec.StartRec((int)comboBoxAudioSource.SelectedIndex, (bool)chkIsLoopback.IsChecked, folderPath);
             btnAudioRecord.IsEnabled = false;
+            comboBoxAudioSource.IsEnabled = false;
+            chkIsLoopback.IsEnabled = false;
+            Equalizer.IsEnabled = false;
             btnAudioSave.IsEnabled = true;
         }
 
@@ -122,17 +131,19 @@ namespace RecMaster
         {
             audioRec.StopRec();
             btnAudioRecord.IsEnabled = true;
+            comboBoxAudioSource.IsEnabled = true;
+            chkIsLoopback.IsEnabled = true;
+            Equalizer.IsEnabled = true;
             btnAudioSave.IsEnabled = false;
         }
 
         private void InitAudioView()
         {
-            foreach (var source in audioRec.sourceIn)
-                comboBoxAudioSource.Items.Add(source.ProductName);
-            foreach (var source in audioRec.sourceOut)
-                comboBoxAudioSource.Items.Add(source.ProductName);
+              foreach (var source in audioRec.sourceIn)
+                  comboBoxAudioSource.Items.Add(source.ProductName);
+              comboBoxAudioSource.Items.Add("Вихідний потік");
 
-            comboBoxAudioSource.SelectedIndex = 0;
+              comboBoxAudioSource.SelectedIndex = 0;
         }
 
         private void InitVideoView()
