@@ -106,6 +106,8 @@
     </ApplicationDefinition>
     <Compile Include="Audio\AudioRec.cs" />
     <Compile Include="Audio\Equalizer.cs" />
+    <Compile Include="Audio\EqualizerBand.cs" />
+    <Compile Include="Audio\EqualizerForWrite.cs" />
     <Compile Include="Common\LabelTime.cs" />
     <Compile Include="Common\LabelTimeThread.cs" />
     <Compile Include="Video\VideoRec.cs" />

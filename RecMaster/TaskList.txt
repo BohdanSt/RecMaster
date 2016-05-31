@@ -1,5 +1,5 @@
 Audio 
-1. Equalizer ?
+1. Equalizer +
 2. Timer + 
 3. SoundBoard +
 4. Preview +
@@ -7,7 +7,7 @@ Audio
 Video
 1. Timer +
 2. Filters
-3. Sound
+3. Sound ?
 4. Preview
 
 Settings

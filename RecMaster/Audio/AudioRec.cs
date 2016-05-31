@@ -8,7 +8,7 @@ using NAudio;
 using NAudio.Wave;
 using WPFSoundVisualizationLib;
 
-namespace RecMaster
+namespace RecMaster.Audio
 {
     class AudioRec
     {
@@ -16,6 +16,7 @@ namespace RecMaster
         private WaveOut loopbackStream;
         private WasapiLoopbackCapture sourceOutStream;
         private WaveFileWriter waveWriter;
+        private WaveRecorder waverecorder;
         private WaveInProvider waveInProvider;
 
         private bool isInputStream;
@@ -24,7 +25,10 @@ namespace RecMaster
         private int sourceNumber;
         public List<WaveInCapabilities> sourceIn;
         public List<WaveOutCapabilities> sourceOut;
-        private WPFSoundVisualizationLib.Equalizer equalizer;
+
+        Equalizer equalizer;
+        EqualizerForWrite equalizerWrite;
+        EqualizerBand[] eqBand;
 
         public delegate void ThreadLabelTimeDelegate();
         public event ThreadLabelTimeDelegate ThreadLabelTimeEventStart = delegate { };
@@ -33,7 +37,7 @@ namespace RecMaster
         public delegate void MetroMessageBoxDelegate(string title, string message);
         public event MetroMessageBoxDelegate MetroMessageBoxEvent = delegate { };
 
-        public AudioRec(WPFSoundVisualizationLib.Equalizer equalizer)
+        public AudioRec()
         { 
             sourceInStream = null;
             sourceOutStream = null;
@@ -51,7 +55,14 @@ namespace RecMaster
                 sourceOut.Add(WaveOut.GetCapabilities(i));
             }
 
-            this.equalizer = equalizer;
+            eqBand = new EqualizerBand[7];
+            eqBand[0] = new EqualizerBand(90, 0.8f, 0);
+            eqBand[1] = new EqualizerBand(250, 0.8f, 0);
+            eqBand[2] = new EqualizerBand(500, 0.8f, 0);
+            eqBand[3] = new EqualizerBand(1500, 0.8f, 0);
+            eqBand[4] = new EqualizerBand(3000, 0.8f, 0);
+            eqBand[5] = new EqualizerBand(5000, 0.8f, 0);
+            eqBand[6] = new EqualizerBand(8000, 0.8f, 0);
         }
 
         public void StartRec(int sourceNumber, bool isLoopback, string folderPath)
@@ -96,7 +107,9 @@ namespace RecMaster
             string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
             waveWriter = new WaveFileWriter(fullName, sourceInStream.WaveFormat);
-            
+
+            equalizerWrite = new EqualizerForWrite(eqBand, sourceInStream.WaveFormat.Channels, sourceInStream.WaveFormat.SampleRate);
+
             sourceInStream.StartRecording();
 
             OnThreadLabelTimeEventStart();
@@ -105,6 +118,7 @@ namespace RecMaster
         void InitOutputStream(string path)
         {
             sourceOutStream = new WasapiLoopbackCapture();
+            sourceOutStream.WaveFormat = new WaveFormat(44100, WaveOut.GetCapabilities(sourceNumber).Channels);
 
             sourceOutStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceOutStream_DataAvailable);
             sourceOutStream.RecordingStopped += new EventHandler<StoppedEventArgs>(sourceOutStream_RecordingStopped);
@@ -123,6 +137,7 @@ namespace RecMaster
         {
             if (waveWriter != null)
             {
+                //equalizerWrite.Transform(e.Buffer, 0, e.BytesRecorded);
                 waveWriter.Write(e.Buffer, 0, e.BytesRecorded);
                 waveWriter.Flush();
             }
@@ -141,6 +156,10 @@ namespace RecMaster
                 waveWriter.Close();
                 waveWriter.Dispose();
                 waveWriter = null;
+            }
+            if (equalizerWrite != null)
+            {
+                equalizerWrite = null;
             }
         }
 
@@ -188,9 +207,13 @@ namespace RecMaster
             if (isInputStream)
             {
                 loopbackStream = new WaveOut();
+
                 waveInProvider = new WaveInProvider(sourceInStream);
 
-                loopbackStream.Init(waveInProvider);
+                equalizer = new Equalizer(waveInProvider.ToSampleProvider(), eqBand);
+
+                loopbackStream.Init(equalizer);
+
                 loopbackStream.Play();
             }
         }
@@ -210,6 +233,10 @@ namespace RecMaster
                 {
                     waveInProvider = null;
                 }
+                if (equalizer != null)
+                {
+                    equalizer = null;
+                }
             }
         }
 
@@ -226,6 +253,25 @@ namespace RecMaster
         private void OnMetroMessageBox(string title, string message)
         {
             MetroMessageBoxEvent(title, message);
+        }
+
+        public void UpdateEqualizer(float[] values)
+        {
+            if (eqBand != null)
+            {
+                for (int i = 0; i < values.Length; i++)
+                {
+                    eqBand[i].Gain = values[i];
+                }
+            }
+            if (equalizer != null)
+            {
+                equalizer.Update();
+            }
+            if (equalizerWrite != null)
+            {
+                equalizerWrite.Update();
+            }
         }
     }
 }

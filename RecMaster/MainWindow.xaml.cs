@@ -20,6 +20,7 @@ using MediaFoundation;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using System.Windows.Forms;
+using RecMaster.Audio;
 
 namespace RecMaster
 {
@@ -44,7 +45,7 @@ namespace RecMaster
         {
             InitializeComponent();
 
-            audioRec = new AudioRec(Equalizer);
+            audioRec = new AudioRec();
             InitAudioView();
             threadAudio = new LabelTimeThread(LabelTimeAudio);
             audioRec.ThreadLabelTimeEventStart += threadAudio.Start;
@@ -123,7 +124,6 @@ namespace RecMaster
             btnAudioRecord.IsEnabled = false;
             comboBoxAudioSource.IsEnabled = false;
             chkIsLoopback.IsEnabled = false;
-            Equalizer.IsEnabled = false;
             btnAudioSave.IsEnabled = true;
         }
 
@@ -133,7 +133,6 @@ namespace RecMaster
             btnAudioRecord.IsEnabled = true;
             comboBoxAudioSource.IsEnabled = true;
             chkIsLoopback.IsEnabled = true;
-            Equalizer.IsEnabled = true;
             btnAudioSave.IsEnabled = false;
         }
 
@@ -217,6 +216,26 @@ namespace RecMaster
                 fileWriter.WriteLine(folderPath);
                 fileWriter.Close();
             }
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float[] values = new float[7];
+            values[0] = (float)Slider0.Value;
+            values[1] = (float)Slider1.Value;
+            values[2] = (float)Slider2.Value;
+            values[3] = (float)Slider3.Value;
+            values[4] = (float)Slider4.Value;
+            values[5] = (float)Slider5.Value;
+            values[6] = (float)Slider6.Value;
+
+            audioRec.UpdateEqualizer(values);
+        }
+
+        private void Slider_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Released)
+                ((Slider)sender).Value = 0;
         }
     }
 }

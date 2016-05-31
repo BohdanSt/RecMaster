@@ -45,10 +45,30 @@
                         <Label Content="Лише для вхідних аудіо потоків" Foreground="DarkGray" FontSize="12"/>
                     </StackPanel>
                 </StackPanel>
-                <svl:Equalizer x:Name="Equalizer" Grid.Column="0" Grid.Row="1" Margin="20" />
+                <StackPanel Grid.Column="0" Grid.Row="1"  HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Low" Grid.Column="0"/>
+                        <Label Content="Mid" Grid.Column="1" HorizontalAlignment="Center"/>
+                        <Label Content="High" Grid.Column="2" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider x:Name="Slider0" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                        <Slider x:Name="Slider1" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                        <Slider x:Name="Slider2" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                        <Slider x:Name="Slider3" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                        <Slider x:Name="Slider4" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                        <Slider x:Name="Slider5" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                        <Slider x:Name="Slider6" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
+                    </StackPanel>
+                </StackPanel>
                 <Label x:Name="LabelTimeAudio" Grid.Column="1" Grid.Row="1" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="32" 
                        Foreground="DeepSkyBlue" BorderBrush="DimGray" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            
+
             </Grid>
             
         </controls:MetroTabItem>
