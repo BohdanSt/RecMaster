@@ -110,6 +110,7 @@
     <Compile Include="Audio\EqualizerForWrite.cs" />
     <Compile Include="Common\LabelTime.cs" />
     <Compile Include="Common\LabelTimeThread.cs" />
+    <Compile Include="Video\BitRate.cs" />
     <Compile Include="Video\VideoRec.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

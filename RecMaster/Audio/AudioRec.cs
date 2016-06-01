@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using NAudio;
 using NAudio.Wave;
-using WPFSoundVisualizationLib;
 
 namespace RecMaster.Audio
 {
     class AudioRec
     {
         private WaveIn sourceInStream;
-        private WaveOut loopbackStream;
+        private DirectSoundOut loopbackStream;
         private WasapiLoopbackCapture sourceOutStream;
         private WaveFileWriter waveWriter;
-        private WaveRecorder waverecorder;
         private WaveInProvider waveInProvider;
 
         private bool isInputStream;
@@ -108,8 +101,6 @@ namespace RecMaster.Audio
 
             waveWriter = new WaveFileWriter(fullName, sourceInStream.WaveFormat);
 
-            equalizerWrite = new EqualizerForWrite(eqBand, sourceInStream.WaveFormat.Channels, sourceInStream.WaveFormat.SampleRate);
-
             sourceInStream.StartRecording();
 
             OnThreadLabelTimeEventStart();
@@ -118,7 +109,6 @@ namespace RecMaster.Audio
         void InitOutputStream(string path)
         {
             sourceOutStream = new WasapiLoopbackCapture();
-            sourceOutStream.WaveFormat = new WaveFormat(44100, WaveOut.GetCapabilities(sourceNumber).Channels);
 
             sourceOutStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceOutStream_DataAvailable);
             sourceOutStream.RecordingStopped += new EventHandler<StoppedEventArgs>(sourceOutStream_RecordingStopped);
@@ -126,6 +116,8 @@ namespace RecMaster.Audio
             string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
             waveWriter = new WaveFileWriter(fullName, sourceOutStream.WaveFormat);
+
+            equalizerWrite = new EqualizerForWrite(eqBand, sourceOutStream.WaveFormat.Channels, sourceOutStream.WaveFormat.SampleRate);
 
             sourceOutStream.StartRecording();
 
@@ -137,7 +129,6 @@ namespace RecMaster.Audio
         {
             if (waveWriter != null)
             {
-                //equalizerWrite.Transform(e.Buffer, 0, e.BytesRecorded);
                 waveWriter.Write(e.Buffer, 0, e.BytesRecorded);
                 waveWriter.Flush();
             }
@@ -157,16 +148,13 @@ namespace RecMaster.Audio
                 waveWriter.Dispose();
                 waveWriter = null;
             }
-            if (equalizerWrite != null)
-            {
-                equalizerWrite = null;
-            }
         }
 
         void sourceOutStream_DataAvailable(object sender, WaveInEventArgs e)
         {
             if (waveWriter != null)
             {
+                equalizerWrite.Transform(e.Buffer, 0, e.BytesRecorded);
                 waveWriter.Write(e.Buffer, 0, e.BytesRecorded);
                 waveWriter.Flush();
             }
@@ -186,27 +174,30 @@ namespace RecMaster.Audio
                 waveWriter.Dispose();
                 waveWriter = null;
             }
+            if (equalizerWrite != null)
+            {
+                equalizerWrite = null;
+            }
         }
 
-        public void StopRec()
+        public void StopRec(bool isShowMessage)
         {
-            if (isInputStream)
-            {
+            if (sourceInStream != null)
                 sourceInStream.StopRecording();
-                if (isLoopback)
-                    StopLoopback();
-            }
-            else
+            if (isLoopback)
+                StopLoopback();
+            if (sourceOutStream != null)
                 sourceOutStream.StopRecording();
             OnThreadLabelTimeEventStop();
-            OnMetroMessageBox("Запис завершено", "Файл було успішно збережено");
+            if (isShowMessage)
+                OnMetroMessageBox("Запис завершено", "Файл було успішно збережено");
         }
 
         private void StartLoopback()
         {
             if (isInputStream)
             {
-                loopbackStream = new WaveOut();
+                loopbackStream = new DirectSoundOut();
 
                 waveInProvider = new WaveInProvider(sourceInStream);
 
@@ -220,23 +211,20 @@ namespace RecMaster.Audio
 
         private void StopLoopback()
         {
-            if (isInputStream)
+            if (loopbackStream != null)
             {
-                if (loopbackStream != null)
-                {
-                    loopbackStream.Stop();
-                    loopbackStream.Dispose();
-                    loopbackStream = null;
-                }
+                loopbackStream.Stop();
+                loopbackStream.Dispose();
+                loopbackStream = null;
+            }
 
-                if (waveInProvider != null)
-                {
-                    waveInProvider = null;
-                }
-                if (equalizer != null)
-                {
-                    equalizer = null;
-                }
+            if (waveInProvider != null)
+            {
+                waveInProvider = null;
+            }
+            if (equalizer != null)
+            {
+                equalizer = null;
             }
         }
 

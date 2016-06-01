@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Drawing;
@@ -10,38 +8,38 @@ using System.Drawing;
 using AForge.Video.FFMPEG;
 using AForge.Video;
 using System.Diagnostics;
+using System.Windows.Media;
+using System.IO;
+using System.Windows.Media.Imaging;
+using AForge.Video.DirectShow;
 
-namespace RecMaster
+namespace RecMaster.Video
 {
-    public enum BitRate
-    {
-        _50kbit = 5000,
-        _100kbit = 10000,
-        _500kbit = 50000,
-        _1000kbit = 1000000,
-        _2000kbit = 2000000,
-        _3000kbit = 3000000
-    }
-
     class VideoRec
     {
-        private bool isRecording;
         private Rectangle screenArea;
-        private UInt32 frameCount;
         
         private int width;
         private int height;
 
-        private ScreenCaptureStream streamVideo;
+        private bool isRecording;
+        private bool isScreenCapture;
+        private int sourceNumber;
+
+        private ScreenCaptureStream streamScreen;
+        private VideoCaptureDevice streamDevice;
         private VideoFileWriter writer;
-        
+
+        private System.Windows.Controls.Image sampleImage;
 
         private int fps = 15;
-        private string screenName;
         private VideoCodec videoCodec;
         private BitRate bitRate;
 
         public List<string> screenNamesList;
+        public List<string> videoDevicesNameList;
+
+        private FilterInfoCollection videoDevices;
 
         public delegate void ThreadLabelTimeDelegate();
         public event ThreadLabelTimeDelegate ThreadLabelTimeEventStart = delegate { };
@@ -50,27 +48,54 @@ namespace RecMaster
         public delegate void MetroMessageBoxDelegate(string title, string message);
         public event MetroMessageBoxDelegate MetroMessageBoxEvent = delegate { };
 
-        public VideoRec ()
+        public VideoRec (System.Windows.Controls.Image sampleImage)
         {
-            this.isRecording = false;
-            this.frameCount = 0;
             this.width = (int)SystemParameters.VirtualScreenWidth;
             this.height = (int)SystemParameters.VirtualScreenHeight;
-
-            this.writer = new VideoFileWriter();
 
             screenNamesList = new List<string>();
             screenNamesList.Add(@"Select ALL");
             foreach (var screen in Screen.AllScreens)
             {
-                screenNamesList.Add(screen.DeviceName);
+                screenNamesList.Add(FormatString(screen.DeviceName));
             }
 
+            videoDevicesNameList = new List<string>();
+            videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            foreach (FilterInfo device in videoDevices)
+            {
+                videoDevicesNameList.Add(FormatString(device.Name));
+            }
+
+            this.writer = new VideoFileWriter();
+            this.isRecording = false;
+            this.sampleImage = sampleImage;
         }
 
-        public void StartRec(string selectedScreen, VideoCodec selectedCodec, BitRate selectedBitRate, int selectedfps, string folderPath)
+        private string FormatString(string name)
         {
-            screenName = selectedScreen;
+            string res = "";
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (!Char.IsControl(name[i]))
+                    res += name[i];
+            }
+            return res;
+        }
+
+        public void StartRec(int selectedNumber, VideoCodec selectedCodec, BitRate selectedBitRate, int selectedfps, string folderPath)
+        {
+            if (selectedNumber < screenNamesList.Count)
+            {
+                isScreenCapture = true;
+                sourceNumber = selectedNumber;
+            }
+            else
+            {
+                isScreenCapture = false;
+                sourceNumber = selectedNumber - screenNamesList.Count;
+            }
+
             videoCodec = selectedCodec;
             bitRate = selectedBitRate;
             fps = selectedfps;
@@ -80,28 +105,22 @@ namespace RecMaster
 
         private void InitRec(string path)
         {
-            if (isRecording == false)
-            {
-            
-                isRecording = true;
-
+            if (isScreenCapture)
                 this.SetScreenArea();
 
-                this.frameCount = 0;
-                
-                string fullName = string.Format(@"{0}\{1}_{2}.avi", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
-
-                // Save File option
-                writer.Open(fullName, this.width, this.height, (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
-
-                // Start main work
-                this.StartRecord();
+            if (isScreenCapture)
+            {
+                StartRecordScreen(path);
+            }
+            else
+            {
+                StartRecordDevice(path);
             }
         }
 
         private void SetScreenArea()
         {
-            if (string.Compare(screenName, @"Select ALL", StringComparison.OrdinalIgnoreCase) == 0)
+            if (sourceNumber == 0)
             {
                 foreach (Screen screen in Screen.AllScreens)
                 {
@@ -110,44 +129,84 @@ namespace RecMaster
             }
             else
             {
-                this.screenArea = Screen.AllScreens
-                                        .First(scr => scr.DeviceName.Equals(screenName))
-                                        .Bounds;
+                this.screenArea = Screen.AllScreens[sourceNumber - 1].Bounds;
                 this.width = this.screenArea.Width;
                 this.height = this.screenArea.Height;
             }
         }
 
-        private void StartRecord()
+        private void StartRecordScreen(string path)
         {
-            this.streamVideo = new ScreenCaptureStream(new Rectangle(0, 0, this.width,  this.height));
+            this.streamScreen = new ScreenCaptureStream(new Rectangle(0, 0, this.width,  this.height));
 
-            this.streamVideo.NewFrame += new NewFrameEventHandler(this.NewFrame);
+            string fullName = string.Format(@"{0}\{1}_{2}.avi", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
-            this.streamVideo.Start();
+            writer.Open(fullName, this.width, this.height, (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
+
+            this.streamScreen.NewFrame += new NewFrameEventHandler(this.NewFrame);
+
+            isRecording = true;
+            this.streamScreen.Start();
+
+            OnThreadLabelTimeEventStart();
+        }
+
+        private void StartRecordDevice(string path)
+        {
+            this.streamDevice = new VideoCaptureDevice(videoDevices[sourceNumber].MonikerString);
+
+            string fullName = string.Format(@"{0}\{1}_{2}.avi", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+
+            streamDevice.VideoResolution = streamDevice.VideoCapabilities[0];
+
+            writer.Open(fullName, streamDevice.VideoResolution.FrameSize.Width, streamDevice.VideoResolution.FrameSize.Height,
+                (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
+
+            this.streamDevice.NewFrame += new NewFrameEventHandler(this.NewFrame);
+
+            isRecording = true;
+            this.streamDevice.Start();
 
             OnThreadLabelTimeEventStart();
         }
 
         private void NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            if (this.isRecording)
+            if (isRecording)
             {
-                this.frameCount++;
-                this.writer.WriteVideoFrame(eventArgs.Frame);
+                Bitmap cloneImage = (Bitmap)eventArgs.Frame.Clone();
+                if (App.Current != null)
+                    App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                    this.sampleImage.Source = BitmapToImageSource(cloneImage)));
+                try
+                {
+                    this.writer.WriteVideoFrame(eventArgs.Frame);
+                }
+                catch (Exception exception) { }
             }
             else
             {
-                streamVideo.SignalToStop();
+                if (isScreenCapture)
+                    streamScreen.SignalToStop();
+                else
+                    streamDevice.SignalToStop();
+
                 writer.Close();
-                OnThreadLabelTimeEventStop();
+
+                if (isScreenCapture)
+                    streamScreen = null;
+                else
+                    streamDevice = null;
             }
         }
 
-        public void StopRec()
+        public void StopRec(bool isShowMessage)
         {
             isRecording = false;
-            OnMetroMessageBox("Запис завершено", "Файл було успішно збережено");
+
+            OnThreadLabelTimeEventStop();
+            if (isShowMessage)
+                OnMetroMessageBox("Запис завершено", "Файл було успішно збережено");
         }
 
         void OnThreadLabelTimeEventStart()
@@ -165,5 +224,22 @@ namespace RecMaster
             MetroMessageBoxEvent(title, message);
         }
 
+        BitmapImage BitmapToImageSource(Bitmap bitmap)
+        {
+            if (bitmap == null)
+                return new BitmapImage();
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                memory.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = memory;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+
+                return bitmapimage;
+            }
+        }
     }
 }

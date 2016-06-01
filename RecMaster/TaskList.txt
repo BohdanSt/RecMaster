@@ -1,5 +1,5 @@
 Audio 
-1. Equalizer +
+1. Equalizer + (not for microphone)
 2. Timer + 
 3. SoundBoard +
 4. Preview +
@@ -8,7 +8,7 @@ Video
 1. Timer +
 2. Filters
 3. Sound ?
-4. Preview
+4. Preview + (default)
 
 Settings
 1. Autorun + 

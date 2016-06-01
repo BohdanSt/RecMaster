@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:RecMaster"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:svl="clr-namespace:WPFSoundVisualizationLib;assembly=WPFSoundVisualizationLib"
-        xmlns:kinect="clr-namespace:Coding4Fun;assembly=Coding4Fun.Kinect.Wpf"
+        xmlns:aforge="clr-namespace:AForge;assembly=AForge"
         mc:Ignorable="d"
         Title="RecMaster" Height="375" Width="550" WindowStartupLocation="CenterScreen"
         BorderThickness="0" 
@@ -100,9 +100,9 @@
                         <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" Width="125" FontSize="12"/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
-                    <Image x:Name="default_png" Source="Common/default.png"  Width="100" Height="100"/>
-                    <Label x:Name="LabelTimeVideo" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" />
+                <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="5">
+                    <Image x:Name="sampleImage" Source="Common/default.png" MaxHeight="100"/>
+                    <Label x:Name="LabelTimeVideo" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" HorizontalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical">
                     <StackPanel >

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NAudio.Dsp;
-using NAudio.Wave;
 
 namespace RecMaster.Audio
 {
@@ -56,23 +51,15 @@ namespace RecMaster.Audio
                 updated = false;
             }
 
-            float[] buffer = new float[count];
-            for (int i = 0; i < count; i++)
-                buffer[i] = bbuffer[i];
-
-            for (int n = 0; n < count; n++)
+            for (int n = 0; n < count; n += 4)
             {
                 int ch = n % channels;
 
                 for (int band = 0; band < bandCount; band++)
                 {
-                    buffer[offset + n] = filters[ch, band].Transform(buffer[offset + n]);
+                    byte[] transformed = BitConverter.GetBytes(filters[ch, band].Transform(BitConverter.ToSingle(bbuffer, offset + n)));
+                    Buffer.BlockCopy(transformed, 0, bbuffer, offset + n, 4);
                 }
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                bbuffer[i] = (byte)((buffer[i] >= 0f)?(buffer[i]):(buffer[i] * 1));
             }
         }
     }

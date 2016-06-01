@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows.Threading;
 using System.Windows.Controls;
 
-namespace RecMaster
+namespace RecMaster.Common
 {
     class LabelTimeThread
     {
@@ -52,6 +48,5 @@ namespace RecMaster
             labelTime.Reset();
             App.Current.Dispatcher.BeginInvoke((Action)(() => label.Content = "00:00:00"));
         }
-
     }
 }

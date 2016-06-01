@@ -21,6 +21,9 @@ using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using System.Windows.Forms;
 using RecMaster.Audio;
+using RecMaster.Video;
+using RecMaster.Common;
+using AForge.Video.DirectShow;
 
 namespace RecMaster
 {
@@ -52,7 +55,7 @@ namespace RecMaster
             audioRec.ThreadLabelTimeEventStop += threadAudio.Stop;
             audioRec.MetroMessageBoxEvent += MetroMessageBox;
 
-            videoRec = new VideoRec();
+            videoRec = new VideoRec(sampleImage);
             InitVideoView();
             threadVideo = new LabelTimeThread(LabelTimeVideo);
             videoRec.ThreadLabelTimeEventStart += threadVideo.Start;
@@ -97,7 +100,7 @@ namespace RecMaster
 
         private void btnVideoRecord_Click(object sender, RoutedEventArgs e)
         {
-            videoRec.StartRec(comboBoxVideoScreens.SelectedValue.ToString(), (VideoCodec)comboBoxVideoCodec.SelectedValue,
+            videoRec.StartRec(comboBoxVideoScreens.SelectedIndex, (VideoCodec)comboBoxVideoCodec.SelectedValue,
                 (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value, folderPath);
             btnVideoRecord.IsEnabled = false;
             comboBoxVideoBitRate.IsEnabled = false;
@@ -109,7 +112,7 @@ namespace RecMaster
 
         private void btnVideoSave_Click(object sender, RoutedEventArgs e)
         {
-            videoRec.StopRec();
+            videoRec.StopRec(true);
             btnVideoRecord.IsEnabled = true;
             comboBoxVideoBitRate.IsEnabled = true;
             comboBoxVideoCodec.IsEnabled = true;
@@ -129,7 +132,7 @@ namespace RecMaster
 
         private void btnAudioSave_Click(object sender, RoutedEventArgs e)
         {
-            audioRec.StopRec();
+            audioRec.StopRec(true);
             btnAudioRecord.IsEnabled = true;
             comboBoxAudioSource.IsEnabled = true;
             chkIsLoopback.IsEnabled = true;
@@ -138,11 +141,11 @@ namespace RecMaster
 
         private void InitAudioView()
         {
-              foreach (var source in audioRec.sourceIn)
-                  comboBoxAudioSource.Items.Add(source.ProductName);
-              comboBoxAudioSource.Items.Add("Вихідний потік");
+            foreach (var source in audioRec.sourceIn)
+                comboBoxAudioSource.Items.Add(source.ProductName);
+            comboBoxAudioSource.Items.Add("Вихідний потік");
 
-              comboBoxAudioSource.SelectedIndex = 0;
+            comboBoxAudioSource.SelectedIndex = 0;
         }
 
         private void InitVideoView()
@@ -161,11 +164,23 @@ namespace RecMaster
             }
 
             comboBoxVideoBitRate.ItemsSource = bitRateDictionary;
-            comboBoxVideoScreens.ItemsSource = videoRec.screenNamesList;
+
+            foreach (string device in videoRec.screenNamesList)
+            {
+                comboBoxVideoScreens.Items.Add(device);
+            }
+            foreach (string device in videoRec.videoDevicesNameList)
+            {
+                comboBoxVideoScreens.Items.Add(device);
+            }
+            comboBoxVideoScreens.SelectedIndex = 0;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            audioRec.StopRec(false);
+            videoRec.StopRec(false);
+
             threadAudio.Stop();
             threadVideo.Stop();
         }

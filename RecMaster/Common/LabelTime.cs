@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace RecMaster
+namespace RecMaster.Common
 {
     class LabelTime
     {
@@ -12,7 +8,7 @@ namespace RecMaster
         private int minutes = 0;
         private int seconds = 0;
         private int milliseconds = 0;
-        private int timeNowMillseconds = DateTime.Now.Millisecond;
+        private int timeNowMillseconds = DateTime.UtcNow.Millisecond;
 
         public LabelTime()
         { }
@@ -52,7 +48,7 @@ namespace RecMaster
 
         public void Trim()
         {
-            int newTimeMilliseconds = DateTime.Now.Millisecond;
+            int newTimeMilliseconds = DateTime.UtcNow.Millisecond;
 
             milliseconds += (newTimeMilliseconds >= timeNowMillseconds)?
                 (newTimeMilliseconds - timeNowMillseconds)
