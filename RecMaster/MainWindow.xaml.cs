@@ -1,29 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using MahApps.Metro.Controls;
 using AForge.Video.FFMPEG;
-using AForge.Video;
-using MediaFoundation;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using System.Windows.Forms;
 using RecMaster.Audio;
 using RecMaster.Video;
 using RecMaster.Common;
-using AForge.Video.DirectShow;
 
 namespace RecMaster
 {
@@ -50,6 +38,7 @@ namespace RecMaster
 
             audioRec = new AudioRec();
             InitAudioView();
+
             threadAudio = new LabelTimeThread(LabelTimeAudio);
             audioRec.ThreadLabelTimeEventStart += threadAudio.Start;
             audioRec.ThreadLabelTimeEventStop += threadAudio.Stop;
@@ -57,6 +46,7 @@ namespace RecMaster
 
             videoRec = new VideoRec(sampleImage);
             InitVideoView();
+
             threadVideo = new LabelTimeThread(LabelTimeVideo);
             videoRec.ThreadLabelTimeEventStart += threadVideo.Start;
             videoRec.ThreadLabelTimeEventStop += threadVideo.Stop;
@@ -102,6 +92,7 @@ namespace RecMaster
         {
             videoRec.StartRec(comboBoxVideoScreens.SelectedIndex, (VideoCodec)comboBoxVideoCodec.SelectedValue,
                 (BitRate)comboBoxVideoBitRate.SelectedValue, (int)numericVideoFPS.Value, folderPath);
+
             btnVideoRecord.IsEnabled = false;
             comboBoxVideoBitRate.IsEnabled = false;
             comboBoxVideoCodec.IsEnabled = false;
@@ -113,6 +104,7 @@ namespace RecMaster
         private void btnVideoSave_Click(object sender, RoutedEventArgs e)
         {
             videoRec.StopRec(true);
+
             btnVideoRecord.IsEnabled = true;
             comboBoxVideoBitRate.IsEnabled = true;
             comboBoxVideoCodec.IsEnabled = true;
@@ -124,6 +116,7 @@ namespace RecMaster
         private void btnAudioRecord_Click(object sender, RoutedEventArgs e)
         {
             audioRec.StartRec((int)comboBoxAudioSource.SelectedIndex, (bool)chkIsLoopback.IsChecked, folderPath);
+
             btnAudioRecord.IsEnabled = false;
             comboBoxAudioSource.IsEnabled = false;
             chkIsLoopback.IsEnabled = false;
@@ -133,6 +126,7 @@ namespace RecMaster
         private void btnAudioSave_Click(object sender, RoutedEventArgs e)
         {
             audioRec.StopRec(true);
+
             btnAudioRecord.IsEnabled = true;
             comboBoxAudioSource.IsEnabled = true;
             chkIsLoopback.IsEnabled = true;
@@ -143,13 +137,48 @@ namespace RecMaster
         {
             foreach (var source in audioRec.sourceIn)
                 comboBoxAudioSource.Items.Add(source.ProductName);
-            comboBoxAudioSource.Items.Add("Вихідний потік");
+            comboBoxAudioSource.Items.Add("SoundBoard (output)");
 
             comboBoxAudioSource.SelectedIndex = 0;
         }
 
         private void InitVideoView()
         {
+            Dictionary<Filters, string> filtersDictionary = new Dictionary<Filters, string>();
+
+            filtersDictionary.Add(Filters.None, "None");
+            filtersDictionary.Add(Filters.Grayscale, "Grayscale");
+            filtersDictionary.Add(Filters.Sepia, "Sepia");
+            filtersDictionary.Add(Filters.RotateChannels, "Rotate channel");
+            filtersDictionary.Add(Filters.ColorFiltering, "Color filtering");
+            filtersDictionary.Add(Filters.LevelsLinear, "Levels linear correction");
+            filtersDictionary.Add(Filters.HueModifier, "Hue modifier");
+            filtersDictionary.Add(Filters.SaturationCorrection, "Saturation correction");
+            filtersDictionary.Add(Filters.BrightnessCorrection, "Brightness correction");
+            filtersDictionary.Add(Filters.ContrastCorrection, "Contrast correction");
+            filtersDictionary.Add(Filters.HSLFiltering, "HSL filtering");
+            filtersDictionary.Add(Filters.YCbCrLinear, "YCbCr linear correction");
+            filtersDictionary.Add(Filters.YCbCrFiltering, "YCbCr filtering");
+            filtersDictionary.Add(Filters.Threshold, "Threshold binarization");
+            filtersDictionary.Add(Filters.FloydSteinbergDithering, "Floyd-Steinberg dithering");
+            filtersDictionary.Add(Filters.OrderedDithering, "Ordered dithering");
+            filtersDictionary.Add(Filters.DifferenceEdgeDetector, "Difference edge detector");
+            filtersDictionary.Add(Filters.HomogenityEdgeDetector, "Homogenity edge detector");
+            filtersDictionary.Add(Filters.SobelEdgeDetector, "Sobel edge detector");
+            filtersDictionary.Add(Filters.Jitter, "Jitter");
+
+            comboBoxVideoFilters.ItemsSource = filtersDictionary;
+
+            foreach (string device in videoRec.screenNamesList)
+            {
+                comboBoxVideoScreens.Items.Add(device);
+            }
+            foreach (string device in videoRec.videoDevicesNameList)
+            {
+                comboBoxVideoScreens.Items.Add(device);
+            }
+            comboBoxVideoScreens.SelectedIndex = 0;
+
             foreach (var codec in Enum.GetValues(typeof(VideoCodec)))
             {
                 if (codec.Equals(VideoCodec.Raw) || codec.Equals(VideoCodec.MPEG2))
@@ -162,18 +191,7 @@ namespace RecMaster
             {
                 bitRateDictionary.Add(bitRate, bitRate.ToString().Substring(1));
             }
-
             comboBoxVideoBitRate.ItemsSource = bitRateDictionary;
-
-            foreach (string device in videoRec.screenNamesList)
-            {
-                comboBoxVideoScreens.Items.Add(device);
-            }
-            foreach (string device in videoRec.videoDevicesNameList)
-            {
-                comboBoxVideoScreens.Items.Add(device);
-            }
-            comboBoxVideoScreens.SelectedIndex = 0;
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -251,6 +269,24 @@ namespace RecMaster
         {
             if (e.LeftButton == MouseButtonState.Released)
                 ((Slider)sender).Value = 0;
+        }
+
+        private void comboBoxAudioSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBoxAudioSource.SelectedIndex < audioRec.sourceIn.Count)
+            {
+                chkIsLoopback.IsEnabled = true;
+            }
+            else
+            {
+                chkIsLoopback.IsChecked = false;
+                chkIsLoopback.IsEnabled = false;
+            }
+        }
+
+        private void comboBoxVideoFilters_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            videoRec.UpdateFilter((Filters)comboBoxVideoFilters.SelectedValue);
         }
     }
 }

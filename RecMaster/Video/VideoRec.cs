@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Drawing;
-
+using AForge;
 using AForge.Video.FFMPEG;
 using AForge.Video;
-using System.Diagnostics;
-using System.Windows.Media;
 using System.IO;
 using System.Windows.Media.Imaging;
 using AForge.Video.DirectShow;
+using AForge.Imaging.Filters;
 
 namespace RecMaster.Video
 {
@@ -25,6 +23,7 @@ namespace RecMaster.Video
         private bool isRecording;
         private bool isScreenCapture;
         private int sourceNumber;
+        private Filters filterNumber = Filters.None;
 
         private ScreenCaptureStream streamScreen;
         private VideoCaptureDevice streamDevice;
@@ -32,7 +31,7 @@ namespace RecMaster.Video
 
         private System.Windows.Controls.Image sampleImage;
 
-        private int fps = 15;
+        private int fps;
         private VideoCodec videoCodec;
         private BitRate bitRate;
 
@@ -54,7 +53,7 @@ namespace RecMaster.Video
             this.height = (int)SystemParameters.VirtualScreenHeight;
 
             screenNamesList = new List<string>();
-            screenNamesList.Add(@"Select ALL");
+            screenNamesList.Add(@"ALL Screens");
             foreach (var screen in Screen.AllScreens)
             {
                 screenNamesList.Add(FormatString(screen.DeviceName));
@@ -174,13 +173,14 @@ namespace RecMaster.Video
         {
             if (isRecording)
             {
-                Bitmap cloneImage = (Bitmap)eventArgs.Frame.Clone();
+                Bitmap filterderImage = AddFilter(eventArgs.Frame);
+                Bitmap cloneImage = (Bitmap)filterderImage.Clone();
                 if (App.Current != null)
                     App.Current.Dispatcher.BeginInvoke((Action)(() =>
                     this.sampleImage.Source = BitmapToImageSource(cloneImage)));
                 try
                 {
-                    this.writer.WriteVideoFrame(eventArgs.Frame);
+                    this.writer.WriteVideoFrame(filterderImage);
                 }
                 catch (Exception exception) { }
             }
@@ -197,6 +197,10 @@ namespace RecMaster.Video
                     streamScreen = null;
                 else
                     streamDevice = null;
+
+                if (App.Current != null)
+                    App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                    this.sampleImage.Source = new BitmapImage(new Uri(@"Common/Default.png", UriKind.Relative))));
             }
         }
 
@@ -240,6 +244,94 @@ namespace RecMaster.Video
 
                 return bitmapimage;
             }
+        }
+
+        private Bitmap AddFilter(Bitmap bitmap)
+        {
+            switch(filterNumber)
+            {
+                case Filters.BrightnessCorrection:
+                    return ApplyFilter(bitmap, new BrightnessCorrection());
+
+                case Filters.ColorFiltering:
+                    return ApplyFilter(bitmap, new ColorFiltering(new IntRange(25, 230), new IntRange(25, 230), new IntRange(25, 230)));
+
+                case Filters.ContrastCorrection:
+                    return ApplyFilter(bitmap, new ContrastCorrection());
+
+                case Filters.DifferenceEdgeDetector:
+                    bitmap = Grayscale.CommonAlgorithms.RMY.Apply(bitmap);
+                    return ApplyFilter(bitmap, new DifferenceEdgeDetector());
+
+                case Filters.FloydSteinbergDithering:
+                    bitmap = Grayscale.CommonAlgorithms.RMY.Apply(bitmap);
+                    return ApplyFilter(bitmap, new FloydSteinbergDithering());
+
+                case Filters.Grayscale:
+                    return ApplyFilter(bitmap, Grayscale.CommonAlgorithms.BT709);
+
+                case Filters.HomogenityEdgeDetector:
+                    bitmap = Grayscale.CommonAlgorithms.RMY.Apply(bitmap);
+                    return ApplyFilter(bitmap, new HomogenityEdgeDetector());
+
+                case Filters.HSLFiltering:
+                    return ApplyFilter(bitmap, new HSLFiltering(new IntRange(330, 30), new Range(0, 1), new Range(0, 1)));
+
+                case Filters.HueModifier:
+                    return ApplyFilter(bitmap, new HueModifier(50));
+
+                case Filters.Jitter:
+                    return ApplyFilter(bitmap, new Jitter());
+
+                case Filters.LevelsLinear:
+                    LevelsLinear lfilter = new LevelsLinear();
+                    lfilter.InRed = new IntRange(30, 230);
+                    lfilter.InGreen = new IntRange(50, 240);
+                    lfilter.InBlue = new IntRange(10, 210);
+                    return ApplyFilter(bitmap, lfilter);
+
+                case Filters.OrderedDithering:
+                    bitmap = Grayscale.CommonAlgorithms.RMY.Apply(bitmap);
+                    return ApplyFilter(bitmap, new OrderedDithering());
+
+                case Filters.RotateChannels:
+                    return ApplyFilter(bitmap, new RotateChannels());
+
+                case Filters.SaturationCorrection:
+                    return ApplyFilter(bitmap, new SaturationCorrection(0.15f));
+
+                case Filters.Sepia:
+                    return ApplyFilter(bitmap, new Sepia());
+
+                case Filters.SobelEdgeDetector:
+                    bitmap = Grayscale.CommonAlgorithms.RMY.Apply(bitmap);
+                    return ApplyFilter(bitmap, new SobelEdgeDetector());
+
+                case Filters.Threshold:
+                    bitmap = Grayscale.CommonAlgorithms.RMY.Apply(bitmap);
+                    return ApplyFilter(bitmap, new Threshold());
+
+                case Filters.YCbCrFiltering:
+                    return ApplyFilter(bitmap, new YCbCrFiltering(new Range(0.2f, 0.9f), new Range(-0.3f, 0.3f), new Range(-0.3f, 0.3f)));
+
+                case Filters.YCbCrLinear:
+                    YCbCrLinear filter = new YCbCrLinear();
+                    filter.InCb = new Range(-0.3f, 0.3f);
+                    return ApplyFilter(bitmap, filter);
+
+                default:
+                    return bitmap;
+            }
+        }
+
+        private Bitmap ApplyFilter(Bitmap bitmap, IFilter filter)
+        {
+            return filter.Apply(bitmap);
+        }
+
+        public void UpdateFilter(Filters filterNumber)
+        {
+            this.filterNumber = filterNumber;
         }
     }
 }

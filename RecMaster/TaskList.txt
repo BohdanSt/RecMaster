@@ -6,9 +6,9 @@ Audio
 
 Video
 1. Timer +
-2. Filters
+2. Filters +
 3. Sound ?
-4. Preview + (default)
+4. Preview +
 
 Settings
 1. Autorun + 

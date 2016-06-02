@@ -5,10 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecMaster"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:svl="clr-namespace:WPFSoundVisualizationLib;assembly=WPFSoundVisualizationLib"
-        xmlns:aforge="clr-namespace:AForge;assembly=AForge"
         mc:Ignorable="d"
-        Title="RecMaster" Height="375" Width="550" WindowStartupLocation="CenterScreen"
+        Title="RecMaster" Height="380" Width="550" WindowStartupLocation="CenterScreen"
         BorderThickness="0" 
         GlowBrush="Black"
         ResizeMode="CanMinimize"
@@ -36,11 +34,11 @@
                     <Button x:Name="btnAudioSave" Content="Зберегти" Click="btnAudioSave_Click" Height="40" Width="125" Margin="10" IsEnabled="False" FontSize="16"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5">
-                    <StackPanel Margin="20">
+                    <StackPanel Margin="10">
                         <Label x:Name="labelAudioSource" Content="Пристрій" Margin="5" HorizontalAlignment="Center"/>
-                        <ComboBox x:Name="comboBoxAudioSource" Width="150" FontSize="12" MaxWidth="250"/>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Center">
+                        <ComboBox x:Name="comboBoxAudioSource" Width="150" FontSize="12" MaxWidth="250" SelectionChanged="comboBoxAudioSource_SelectionChanged"/>
+                    </StackPanel >
+                    <StackPanel HorizontalAlignment="Center" Margin="10">
                         <CheckBox x:Name="chkIsLoopback" Content="Програвати аудіо" IsChecked="False"/>
                         <Label Content="Лише для вхідних аудіо потоків" Foreground="DarkGray" FontSize="12"/>
                     </StackPanel>
@@ -66,7 +64,7 @@
                         <Slider x:Name="Slider6" Margin="5" Orientation="Vertical" Width="20" Height="80" Value="0" Minimum="-30" Maximum="30" ValueChanged="Slider_ValueChanged" MouseDown="Slider_MouseDown"/>
                     </StackPanel>
                 </StackPanel>
-                <Label x:Name="LabelTimeAudio" Grid.Column="1" Grid.Row="1" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="32" 
+                <Label x:Name="LabelTimeAudio" Grid.Column="1" Grid.Row="1" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="34" 
                        Foreground="DeepSkyBlue" BorderBrush="DimGray" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
             </Grid>
@@ -76,40 +74,46 @@
         <controls:MetroTabItem Header="Відео">
             
             <Grid Background="#FF373737">
-                
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Button x:Name="btnVideoRecord" Content="Записати" Click="btnVideoRecord_Click" Height="40" Width="125" Margin="10" FontSize="16"/>
+                        <Button x:Name="btnVideoSave" Content="Зберегти" Click="btnVideoSave_Click" Height="40" Width="125" Margin="10" IsEnabled="False" FontSize="16"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" >
+                        <Image x:Name="sampleImage" Source="Common/Default.png" MaxHeight="100" Margin="6 0 5 5"/>
+                        <Label x:Name="LabelTimeVideo" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
                 
-                <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Button x:Name="btnVideoRecord" Content="Записати" Click="btnVideoRecord_Click" Height="40" Width="125" Margin="10" FontSize="16"/>
-                    <Button x:Name="btnVideoSave" Content="Зберегти" Click="btnVideoSave_Click" Height="40" Width="125" Margin="10" IsEnabled="False" FontSize="16"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical">
-                    <StackPanel Margin="5">
+                <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" Orientation="Vertical">
+                    <StackPanel Margin="4 5">
+                        <Label x:Name="labelVideoFilters" Content="Фільтри" HorizontalAlignment="Center"/>
+                        <ComboBox x:Name="comboBoxVideoFilters" SelectedIndex="0" SelectedValuePath="Key" DisplayMemberPath="Value" Width="125" FontSize="12" 
+                                  SelectionChanged="comboBoxVideoFilters_SelectionChanged"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <Label x:Name="labelVideoScreens" Content="Пристрій" HorizontalAlignment="Center"/>
+                        <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" Width="125" FontSize="12" />
+                    </StackPanel>
+                    <StackPanel Margin="4">
                         <Label x:Name="labelVideoCodec" Content="Відеокодеки" HorizontalAlignment="Center"/>
                         <ComboBox x:Name="comboBoxVideoCodec" SelectedIndex="0" Width="125" FontSize="12"/>
                     </StackPanel>
                     <StackPanel >
-                        <Label x:Name="labelVideoScreens" Content="Пристрій" HorizontalAlignment="Center"/>
-                        <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" Width="125" FontSize="12"/>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="5">
-                    <Image x:Name="sampleImage" Source="Common/default.png" MaxHeight="100"/>
-                    <Label x:Name="LabelTimeVideo" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" HorizontalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical">
-                    <StackPanel >
                         <Label x:Name="labelVideoBitRate" Content="Бітрейт" HorizontalAlignment="Center"/>
                         <ComboBox x:Name="comboBoxVideoBitRate" SelectedIndex="3"  Width="125" SelectedValuePath="Key" DisplayMemberPath="Value" FontSize="12"/>
                     </StackPanel>
-                    <StackPanel Margin="5">
+                    <StackPanel Margin="4">
                         <Label x:Name="labelVideoFPS" Content="FPS" HorizontalAlignment="Center"/>
                         <controls:NumericUpDown x:Name="numericVideoFPS" Minimum="1" Maximum="60" Value="10" FontSize="12" Width="125"/>
                     </StackPanel>
@@ -136,7 +140,7 @@
                     <Label Content="Оберіть теку для збереження файлів" FontSize="14"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBox x:Name="textBlockFolder" Width="300" Height="40" FontSize="14" VerticalContentAlignment="Center" LostFocus="textBlockFolder_LostFocus"/>
-                        <Button x:Name="btnFolder" Width="125" Height="40" Content="Обрати" FontSize="16" Margin="10" Click="btnFolder_Click"/>
+                        <Button x:Name="btnFolder" Width="125" Height="40" Content="Обрати" FontSize="16" Margin="10 10 5 5" Click="btnFolder_Click"/>
                     </StackPanel>
                     <Label Content="Місцерозташування на комп'ютері для збереження файлів." Foreground="DarkGray" FontSize="12"/>
                 </StackPanel>

@@ -43,6 +43,14 @@
       <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Imaging.2.2.5\lib\AForge.Imaging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
       <HintPath>..\packages\AForge.Video.2.2.5\lib\AForge.Video.dll</HintPath>
       <Private>True</Private>
@@ -54,20 +62,8 @@
     <Reference Include="AForge.Video.FFMPEG">
       <HintPath>..\packages\AForge.Video.FFMPEG.dll</HintPath>
     </Reference>
-    <Reference Include="Coding4Fun.Kinect.Wpf, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Coding4Fun.Kinect.Wpf.1.7.0\lib\Coding4Fun.Kinect.Wpf.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MahApps.Metro, Version=1.2.3.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.3.0\lib\net45\MahApps.Metro.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MediaFoundation.Net, Version=2.0.0.14, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\MediaFoundation.Net.2.0.0.14\lib\net35-client\MediaFoundation.Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Coding4Fun.Kinect.Wpf.1.7.0\lib\Microsoft.Expression.Drawing.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -94,10 +90,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFSoundVisualizationLib, Version=0.3.4442.43191, Culture=neutral, PublicKeyToken=eb44ed7102b4fcc1, processorArchitecture=MSIL">
-      <HintPath>..\packages\WPFSVL.1.0.0\lib\net40\WPFSoundVisualizationLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -111,6 +103,7 @@
     <Compile Include="Common\LabelTime.cs" />
     <Compile Include="Common\LabelTimeThread.cs" />
     <Compile Include="Video\BitRate.cs" />
+    <Compile Include="Video\Filters.cs" />
     <Compile Include="Video\VideoRec.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -154,14 +147,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Common\default.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="TaskList.txt" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Common\record.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Common\Default.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
