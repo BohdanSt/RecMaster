@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="RecMaster.Audio.AudioRec">
+    <Position X="5.5" Y="2.5" Width="3.75" />
+    <NestedTypes>
+      <Delegate Name="RecMaster.Audio.AudioRec.ThreadLabelTimeDelegate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Audio\AudioRec.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="RecMaster.Audio.AudioRec.MetroMessageBoxDelegate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Audio\AudioRec.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gEUACAAEkFECgAAAAABAAAggFQgAhAEAAAFBCIAAAAA=</HashCode>
+      <FileName>Audio\AudioRec.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="equalizer" />
+      <Field Name="equalizerWrite" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="eqBand" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="RecMaster.Audio.Equalizer">
+    <Position X="0.5" Y="7.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAAAAAAAAAgAAAAACkACAAAAIAAAAQAEAAAAA=</HashCode>
+      <FileName>Audio\Equalizer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="bands" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="RecMaster.Audio.EqualizerBand">
+    <Position X="1" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAIABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Audio\EqualizerBand.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RecMaster.Audio.EqualizerForWrite">
+    <Position X="1" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAQAAAAAAAAAAAAAAASEACAAAAIAAAAQAEAAAAA=</HashCode>
+      <FileName>Audio\EqualizerForWrite.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="bands" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="RecMaster.Video.VideoRec">
+    <Position X="17.25" Y="0.75" Width="3.75" />
+    <NestedTypes>
+      <Delegate Name="RecMaster.Video.VideoRec.ThreadLabelTimeDelegate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Video\VideoRec.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="RecMaster.Video.VideoRec.MetroMessageBoxDelegate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Video\VideoRec.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gAQAKAAFEAECAAwAUQMgQEgBBQAAEIoIERhACAAAAQI=</HashCode>
+      <FileName>Video\VideoRec.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="bitRate" />
+      <Field Name="filterNumber" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RecMaster.Common.LabelTime">
+    <Position X="14.75" Y="6.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAJAAIBFAhAAEAAAAAAAAAAQAAAAQAAAAAAAAAQA=</HashCode>
+      <FileName>Common\LabelTime.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RecMaster.Common.LabelTimeThread">
+    <Position X="10.25" Y="7.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACEAABEABAAAAAAAAAAAEAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Common\LabelTimeThread.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="labelTime" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RecMaster.MainWindow">
+    <Position X="11" Y="0.75" Width="3.5" />
+    <AssociationLine Name="threadAudio" Type="RecMaster.Common.LabelTimeThread" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="11.312" Y="6.088" />
+        <Point X="11.312" Y="7.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>IAFwAAEAggMIAAAAIAACAAAAAAAAQAAFgBDIAAAIAQA=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="threadAudio" />
+      <Field Name="threadVideo" />
+      <Field Name="audioRec" />
+      <Field Name="videoRec" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Enum Name="RecMaster.Video.BitRate">
+    <Position X="22.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIEAAAAAAAAAAAAAAAAgAAAAAAAYAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Video\BitRate.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="RecMaster.Video.Filters">
+    <Position X="22.5" Y="0.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAABYAABAAAAABQQAAgQQICABAABBAAAAAgAAkAAQA=</HashCode>
+      <FileName>Video\Filters.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

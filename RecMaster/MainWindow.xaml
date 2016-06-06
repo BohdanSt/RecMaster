@@ -40,7 +40,7 @@
                     </StackPanel >
                     <StackPanel HorizontalAlignment="Center" Margin="10">
                         <CheckBox x:Name="chkIsLoopback" Content="Програвати аудіо" IsChecked="False"/>
-                        <Label Content="Лише для вхідних аудіо потоків" Foreground="DarkGray" FontSize="12"/>
+                        <Label Content="Лише для вхідних аудіопотоків" Foreground="DarkGray" FontSize="12"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="0" Grid.Row="1"  HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -90,7 +90,7 @@
                         <Button x:Name="btnVideoSave" Content="Зберегти" Click="btnVideoSave_Click" Height="40" Width="125" Margin="10" IsEnabled="False" FontSize="16"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                        <Image x:Name="sampleImage" Source="Common/Default.png" MaxHeight="100" Margin="6 0 5 5"/>
+                        <Image x:Name="sampleImage" Source="Common/Default.png" MaxHeight="100" MaxWidth="220" Margin="6 0 5 5"/>
                         <Label x:Name="LabelTimeVideo" FontFamily="Consolas, Tahoma" Content="00:00:00" FontSize="28" Foreground="DeepSkyBlue" BorderBrush="DimGray" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
@@ -103,7 +103,7 @@
                     </StackPanel>
                     <StackPanel>
                         <Label x:Name="labelVideoScreens" Content="Пристрій" HorizontalAlignment="Center"/>
-                        <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" Width="125" FontSize="12" />
+                        <ComboBox x:Name="comboBoxVideoScreens" SelectedIndex="0" Width="125" FontSize="12" SelectionChanged="comboBoxVideoScreens_SelectionChanged"/>
                     </StackPanel>
                     <StackPanel Margin="4">
                         <Label x:Name="labelVideoCodec" Content="Відеокодеки" HorizontalAlignment="Center"/>

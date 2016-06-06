@@ -20,6 +20,8 @@ namespace RecMaster.Video
         private int width;
         private int height;
 
+        private int startPosX;
+
         private bool isRecording;
         private bool isScreenCapture;
         private int sourceNumber;
@@ -82,7 +84,8 @@ namespace RecMaster.Video
             return res;
         }
 
-        public void StartRec(int selectedNumber, VideoCodec selectedCodec, BitRate selectedBitRate, int selectedfps, string folderPath)
+        public void StartRec(int selectedNumber, VideoCodec selectedCodec, BitRate selectedBitRate, 
+                            int selectedfps, string folderPath)
         {
             if (selectedNumber < screenNamesList.Count)
             {
@@ -119,15 +122,29 @@ namespace RecMaster.Video
 
         private void SetScreenArea()
         {
+            this.screenArea = new Rectangle();
+
             if (sourceNumber == 0)
             {
                 foreach (Screen screen in Screen.AllScreens)
                 {
                     this.screenArea = Rectangle.Union(screenArea, screen.Bounds);
                 }
+                this.width = this.screenArea.Width;
+                this.height = this.screenArea.Height;
+                startPosX = 0;
             }
             else
             {
+                if (sourceNumber > Screen.AllScreens.Length)
+                    sourceNumber = 1;
+
+                for (int i = 1; i < sourceNumber; i++)
+                {
+                    this.screenArea = Rectangle.Union(screenArea, Screen.AllScreens[i - 1].Bounds);
+                }
+                this.startPosX = this.screenArea.Width;
+
                 this.screenArea = Screen.AllScreens[sourceNumber - 1].Bounds;
                 this.width = this.screenArea.Width;
                 this.height = this.screenArea.Height;
@@ -136,11 +153,14 @@ namespace RecMaster.Video
 
         private void StartRecordScreen(string path)
         {
-            this.streamScreen = new ScreenCaptureStream(new Rectangle(0, 0, this.width,  this.height));
+            this.streamScreen = new ScreenCaptureStream(new Rectangle(startPosX, 0, this.width,  this.height));
 
-            string fullName = string.Format(@"{0}\{1}_{2}.avi", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+            string fullName = string.Format(@"{0}\{1}_{2}.avi", path, 
+                                            Environment.UserName.ToUpper(), 
+                                            DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
-            writer.Open(fullName, this.width, this.height, (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
+            writer.Open(fullName, this.width, this.height, (int)fps, 
+                        (VideoCodec)videoCodec, (int)(BitRate)bitRate);
 
             this.streamScreen.NewFrame += new NewFrameEventHandler(this.NewFrame);
 
@@ -154,12 +174,15 @@ namespace RecMaster.Video
         {
             this.streamDevice = new VideoCaptureDevice(videoDevices[sourceNumber].MonikerString);
 
-            string fullName = string.Format(@"{0}\{1}_{2}.avi", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+            string fullName = string.Format(@"{0}\{1}_{2}.avi", path, 
+                                            Environment.UserName.ToUpper(), 
+                                            DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
             streamDevice.VideoResolution = streamDevice.VideoCapabilities[0];
 
-            writer.Open(fullName, streamDevice.VideoResolution.FrameSize.Width, streamDevice.VideoResolution.FrameSize.Height,
-                (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
+            writer.Open(fullName, streamDevice.VideoResolution.FrameSize.Width, 
+                        streamDevice.VideoResolution.FrameSize.Height,
+                        (int)fps, (VideoCodec)videoCodec, (int)(BitRate)bitRate);
 
             this.streamDevice.NewFrame += new NewFrameEventHandler(this.NewFrame);
 
@@ -190,13 +213,12 @@ namespace RecMaster.Video
                     streamScreen.SignalToStop();
                 else
                     streamDevice.SignalToStop();
-
-                writer.Close();
-
                 if (isScreenCapture)
                     streamScreen = null;
                 else
                     streamDevice = null;
+
+                writer.Close();
 
                 if (App.Current != null)
                     App.Current.Dispatcher.BeginInvoke((Action)(() =>

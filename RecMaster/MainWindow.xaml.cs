@@ -288,5 +288,13 @@ namespace RecMaster
         {
             videoRec.UpdateFilter((Filters)comboBoxVideoFilters.SelectedValue);
         }
+
+        private void comboBoxVideoScreens_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (comboBoxVideoScreens.SelectedIndex < videoRec.screenNamesList.Count)
+                numericVideoFPS.Value = 10;
+            else
+                numericVideoFPS.Value = 24;
+        }
     }
 }

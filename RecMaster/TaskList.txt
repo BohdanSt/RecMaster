@@ -7,7 +7,7 @@ Audio
 Video
 1. Timer +
 2. Filters +
-3. Sound ?
+3. Sound -
 4. Preview +
 
 Settings
@@ -17,3 +17,7 @@ Settings
 General
 1. Grid in Tabs +
 2. Icon +
+
+Screen binding +
+Device updating #  
+Localization # 

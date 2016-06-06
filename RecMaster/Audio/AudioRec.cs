@@ -17,7 +17,6 @@ namespace RecMaster.Audio
 
         private int sourceNumber;
         public List<WaveInCapabilities> sourceIn;
-        public List<WaveOutCapabilities> sourceOut;
 
         Equalizer equalizer;
         EqualizerForWrite equalizerWrite;
@@ -40,12 +39,6 @@ namespace RecMaster.Audio
             for (int i = 0; i < WaveIn.DeviceCount; i++)
             {
                 sourceIn.Add(WaveIn.GetCapabilities(i));
-            }
-
-            sourceOut = new List<WaveOutCapabilities>();
-            for (int i = 0; i < WaveOut.DeviceCount; i++)
-            {
-                sourceOut.Add(WaveOut.GetCapabilities(i));
             }
 
             eqBand = new EqualizerBand[7];
@@ -97,7 +90,9 @@ namespace RecMaster.Audio
             sourceInStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceInStream_DataAvailable);
             sourceInStream.RecordingStopped += new EventHandler<StoppedEventArgs>(sourceInStream_RecordingStopped);
 
-            string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+            string fullName = string.Format(@"{0}\{1}_{2}.wav", path, 
+                                            Environment.UserName.ToUpper(), 
+                                            DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
             waveWriter = new WaveFileWriter(fullName, sourceInStream.WaveFormat);
 
@@ -113,11 +108,14 @@ namespace RecMaster.Audio
             sourceOutStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceOutStream_DataAvailable);
             sourceOutStream.RecordingStopped += new EventHandler<StoppedEventArgs>(sourceOutStream_RecordingStopped);
 
-            string fullName = string.Format(@"{0}\{1}_{2}.wav", path, Environment.UserName.ToUpper(), DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
+            string fullName = string.Format(@"{0}\{1}_{2}.wav", path, 
+                                            Environment.UserName.ToUpper(), 
+                                            DateTime.Now.ToString("d_MMM_yyyy_HH_mm_ssff"));
 
             waveWriter = new WaveFileWriter(fullName, sourceOutStream.WaveFormat);
 
-            equalizerWrite = new EqualizerForWrite(eqBand, sourceOutStream.WaveFormat.Channels, sourceOutStream.WaveFormat.SampleRate);
+            equalizerWrite = new EqualizerForWrite(eqBand, sourceOutStream.WaveFormat.Channels, 
+                                                    sourceOutStream.WaveFormat.SampleRate);
 
             sourceOutStream.StartRecording();
 
